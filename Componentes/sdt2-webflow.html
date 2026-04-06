@@ -1,0 +1,508 @@
+<!--
+  ╔══════════════════════════════════════════════════════════════╗
+  ║  NUVIA AI — Widget DT2 (Sticky Qualifying Form)             ║
+  ║  INSTRUÇÃO DE USO NO WEBFLOW:                               ║
+  ║  1. Abra o projeto no Webflow Designer                      ║
+  ║  2. Vá em Pages → (página desejada) → Page Settings        ║
+  ║  3. Cole TODO este código em "Before </body> tag"           ║
+  ║  4. Publish. O widget aparece 1,2s após o scroll inicial.   ║
+  ╚══════════════════════════════════════════════════════════════╝
+-->
+
+<!-- NUVIA DT2 :: Font -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+
+<!-- NUVIA DT2 :: Styles -->
+<style>
+/* ── NUVIA DT2 WIDGET ── */
+#nuvia-sdt2-wrap{
+  position:fixed;bottom:24px;right:24px;
+  z-index:99999;display:flex;flex-direction:column;
+  width:340px;
+  transform:translateY(120px);opacity:0;
+  transition:transform .4s cubic-bezier(.34,1.56,.64,1),opacity .3s ease,box-shadow .3s;
+  border-radius:22px;
+  font-family:'Plus Jakarta Sans',sans-serif;
+}
+#nuvia-sdt2-wrap.nuvia-visible{transform:translateY(0);opacity:1;}
+#nuvia-sdt2-wrap.nuvia-open{
+  box-shadow:0 0 0 2px #7C3AED,0 12px 48px rgba(124,58,237,.25);
+}
+/* Panel */
+.nuvia-panel{
+  overflow:hidden;max-height:0;
+  transition:max-height .42s cubic-bezier(.4,0,.2,1);
+  background:#0D1B3E;border-radius:22px 22px 0 0;
+}
+#nuvia-sdt2-wrap.nuvia-open .nuvia-panel{max-height:460px;}
+.nuvia-panel-inner{padding:16px 16px 10px;}
+/* Progress */
+.nuvia-progress{height:3px;background:rgba(255,255,255,.1);border-radius:2px;margin-bottom:14px;overflow:hidden;}
+.nuvia-progress-bar{height:100%;background:linear-gradient(135deg,#7C3AED,#A855F7);border-radius:2px;transition:width .3s;width:0%;}
+/* Close */
+.nuvia-close{
+  float:right;margin:-2px -4px 8px 0;
+  background:none;border:none;cursor:pointer;
+  color:rgba(255,255,255,.35);padding:4px;border-radius:6px;
+  transition:color .15s,background .15s;line-height:0;
+}
+.nuvia-close:hover{color:#fff;background:rgba(255,255,255,.1);}
+/* Steps */
+.nuvia-step{display:none;}
+.nuvia-step.nuvia-active{display:block;}
+.nuvia-step-label{font-size:10px;font-weight:700;color:rgba(255,255,255,.38);letter-spacing:.7px;text-transform:uppercase;margin-bottom:7px;}
+.nuvia-question{font-size:13px;font-weight:700;color:#fff;line-height:1.4;margin-bottom:12px;}
+/* Multiple choice */
+.nuvia-options{display:flex;flex-direction:column;gap:5px;}
+.nuvia-opt{
+  display:block;width:100%;
+  padding:8px 11px;border-radius:9px;
+  border:1px solid rgba(255,255,255,.1);
+  background:rgba(255,255,255,.05);
+  color:rgba(255,255,255,.72);font-size:12px;font-weight:600;
+  cursor:pointer;transition:all .15s;
+  font-family:'Plus Jakarta Sans',sans-serif;text-align:left;
+}
+.nuvia-opt:hover{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.2);color:#fff;}
+.nuvia-opt.nuvia-sel{background:rgba(124,58,237,.3);border-color:#7C3AED;color:#fff;}
+/* Fields */
+.nuvia-select,.nuvia-input{
+  width:100%;
+  background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);
+  border-radius:10px;padding:9px 12px;
+  font-family:'Plus Jakarta Sans',sans-serif;
+  font-size:13px;font-weight:500;color:#fff;outline:none;
+  -webkit-appearance:none;appearance:none;
+  transition:background .15s,border-color .15s;
+  box-sizing:border-box;
+}
+.nuvia-select option{background:#0D1B3E;color:#fff;}
+.nuvia-select:focus,.nuvia-input:focus{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.25);}
+.nuvia-input::placeholder{color:rgba(255,255,255,.3);}
+.nuvia-error{font-size:11px;color:#FB923C;margin-top:5px;display:none;}
+.nuvia-error.nuvia-show{display:block;}
+.nuvia-field-err{border-color:#FB923C !important;}
+/* Nav */
+.nuvia-nav{display:flex;align-items:center;justify-content:space-between;margin-top:10px;}
+.nuvia-btn-next{
+  background:linear-gradient(135deg,#7C3AED,#A855F7);color:#fff;
+  font-family:'Plus Jakarta Sans',sans-serif;
+  font-size:12px;font-weight:700;padding:8px 16px;
+  border-radius:8px;border:none;cursor:pointer;transition:opacity .15s;
+}
+.nuvia-btn-next:hover{opacity:.88;}
+.nuvia-btn-back{
+  background:none;border:none;color:rgba(255,255,255,.38);
+  font-family:'Plus Jakarta Sans',sans-serif;
+  font-size:12px;font-weight:600;cursor:pointer;padding:8px 0;
+  transition:color .15s;
+}
+.nuvia-btn-back:hover{color:rgba(255,255,255,.75);}
+/* Results */
+.nuvia-result{display:none;padding:12px 4px 8px;text-align:center;}
+.nuvia-result.nuvia-show{display:block;}
+.nuvia-result-badge{
+  display:inline-block;font-size:11px;font-weight:700;
+  padding:4px 12px;border-radius:9999px;margin-bottom:8px;
+}
+.nuvia-result-badge.ok{background:rgba(20,184,166,.2);color:#14B8A6;}
+.nuvia-result-badge.wait{background:rgba(124,58,237,.2);color:#A855F7;}
+.nuvia-result-title{font-size:14px;font-weight:800;color:#fff;line-height:1.3;margin-bottom:7px;}
+.nuvia-result-body{font-size:12px;color:rgba(255,255,255,.55);margin-bottom:12px;line-height:1.4;}
+.nuvia-result-cta{
+  display:inline-flex;align-items:center;gap:6px;
+  background:#14B8A6;color:#fff;
+  font-family:'Plus Jakarta Sans',sans-serif;
+  font-size:12px;font-weight:700;padding:8px 16px;
+  border-radius:9px;transition:opacity .15s;text-decoration:none;
+}
+.nuvia-result-cta:hover{opacity:.88;}
+/* Bottom pill */
+.nuvia-bottom{background:#0D1B3E;padding:12px;}
+#nuvia-sdt2-wrap:not(.nuvia-open) .nuvia-bottom{border-radius:22px;}
+#nuvia-sdt2-wrap.nuvia-open .nuvia-bottom{border-top:1px solid rgba(255,255,255,.08);border-radius:0 0 20px 20px;}
+.nuvia-msg-input{
+  width:100%;background:rgba(255,255,255,.1);
+  border:1px solid rgba(255,255,255,.14);border-radius:12px;
+  padding:10px 14px;margin-bottom:8px;
+  font-family:'Plus Jakarta Sans',sans-serif;
+  font-size:13px;font-weight:500;color:#fff;outline:none;
+  max-height:60px;
+  transition:max-height .35s ease,opacity .25s ease,margin .35s ease,padding .35s ease;
+  box-sizing:border-box;
+}
+.nuvia-msg-input::placeholder{color:rgba(255,255,255,.35);}
+.nuvia-msg-input:focus{background:rgba(255,255,255,.15);border-color:rgba(255,255,255,.28);}
+#nuvia-sdt2-wrap.nuvia-open .nuvia-msg-input{
+  max-height:0;margin-bottom:0;padding-top:0;padding-bottom:0;
+  opacity:0;pointer-events:none;overflow:hidden;
+}
+.nuvia-actions{display:flex;align-items:center;}
+.nuvia-demo-btn{
+  background:none;border:none;color:#fff;
+  display:flex;align-items:center;gap:7px;
+  font-size:13px;font-weight:700;padding:9px 14px;
+  border-radius:10px;cursor:pointer;transition:background .15s;
+  flex:1;justify-content:center;
+  font-family:'Plus Jakarta Sans',sans-serif;
+}
+.nuvia-demo-btn:hover{background:rgba(255,255,255,.08);}
+.nuvia-divider{width:1px;height:20px;background:rgba(255,255,255,.15);flex-shrink:0;}
+.nuvia-teste-btn{
+  display:flex;align-items:center;justify-content:center;gap:7px;flex:1;
+  background:#25D366;color:#fff;
+  font-family:'Plus Jakarta Sans',sans-serif;
+  font-size:13px;font-weight:700;padding:9px 14px;
+  border-radius:10px;border:none;cursor:pointer;
+  transition:background .15s,transform .1s;
+}
+.nuvia-teste-btn:hover{background:#20b858;transform:scale(1.02);}
+.nuvia-teste-btn:active{transform:scale(.98);}
+/* Mobile */
+@media(max-width:900px){
+  #nuvia-sdt2-wrap{right:auto;left:50%;transform:translateX(-50%) translateY(120px);width:calc(100% - 32px);max-width:400px;}
+  #nuvia-sdt2-wrap.nuvia-visible{transform:translateX(-50%) translateY(0);}
+  #nuvia-sdt2-wrap.nuvia-open{transform:translateX(-50%) translateY(0);}
+}
+</style>
+
+<!-- NUVIA DT2 :: HTML -->
+<div id="nuvia-sdt2-wrap">
+
+  <div class="nuvia-panel" id="nuvia-panel">
+    <div class="nuvia-panel-inner">
+      <button class="nuvia-close" id="nuvia-close" aria-label="Fechar">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+      <div class="nuvia-progress"><div class="nuvia-progress-bar" id="nuvia-bar"></div></div>
+
+      <!-- Step 1 -->
+      <div class="nuvia-step nuvia-active" id="nuvia-s0">
+        <div class="nuvia-step-label">Passo 1 de 6</div>
+        <div class="nuvia-question">Qual seu maior problema para qualificar leads?</div>
+        <div class="nuvia-options">
+          <button class="nuvia-opt" data-val="noreply" onclick="nuviaSelectOpt(this)">Tempo de resposta do time</button>
+          <button class="nuvia-opt" data-val="overload" onclick="nuviaSelectOpt(this)">Time de vendas sobrecarregado</button>
+          <button class="nuvia-opt" data-val="slow" onclick="nuviaSelectOpt(this)">Qualificação manual demora muito</button>
+          <button class="nuvia-opt" data-val="noise" onclick="nuviaSelectOpt(this)">Muitos leads sem perfil no pipeline</button>
+          <button class="nuvia-opt" data-val="followup" onclick="nuviaSelectOpt(this)">Falta de follow-up consistente</button>
+        </div>
+        <div class="nuvia-error" id="nuvia-e0">Selecione uma opção para continuar.</div>
+      </div>
+
+      <!-- Step 2 -->
+      <div class="nuvia-step" id="nuvia-s1">
+        <div class="nuvia-step-label">Passo 2 de 6</div>
+        <div class="nuvia-question">Quantos leads você gera por mês?</div>
+        <div class="nuvia-options">
+          <button class="nuvia-opt" data-group="leads" data-val="lt500" onclick="nuviaSelectOpt(this)">Menos de 500 por mês</button>
+          <button class="nuvia-opt" data-group="leads" data-val="501-1000" onclick="nuviaSelectOpt(this)">Entre 501 e 1.000 por mês</button>
+          <button class="nuvia-opt" data-group="leads" data-val="1001-5000" onclick="nuviaSelectOpt(this)">Entre 1.001 e 5.000 por mês</button>
+          <button class="nuvia-opt" data-group="leads" data-val="5000+" onclick="nuviaSelectOpt(this)">Mais de 5.000 por mês</button>
+        </div>
+        <div class="nuvia-error" id="nuvia-e1">Selecione o volume de leads.</div>
+      </div>
+
+      <!-- Step 3 -->
+      <div class="nuvia-step" id="nuvia-s2">
+        <div class="nuvia-step-label">Passo 3 de 6</div>
+        <div class="nuvia-question">Qual é o tamanho do seu time de vendas?</div>
+        <div class="nuvia-options">
+          <button class="nuvia-opt" data-group="team" data-val="none" onclick="nuviaSelectOpt(this)">Não tenho pessoas dedicadas</button>
+          <button class="nuvia-opt" data-group="team" data-val="1-3" onclick="nuviaSelectOpt(this)">De 1 a 3 pessoas</button>
+          <button class="nuvia-opt" data-group="team" data-val="4-10" onclick="nuviaSelectOpt(this)">De 4 a 10 pessoas</button>
+          <button class="nuvia-opt" data-group="team" data-val="10+" onclick="nuviaSelectOpt(this)">Mais de 10 pessoas</button>
+        </div>
+        <div class="nuvia-error" id="nuvia-e2">Selecione o tamanho do time.</div>
+      </div>
+
+      <!-- Step 4 -->
+      <div class="nuvia-step" id="nuvia-s3">
+        <div class="nuvia-step-label">Passo 4 de 6</div>
+        <div class="nuvia-question">Qual CRM você utiliza atualmente?</div>
+        <select class="nuvia-select" id="nuvia-crm">
+          <option value="">Selecione uma opção</option>
+          <option value="none">Não uso CRM</option>
+          <option value="rd">RD Station</option>
+          <option value="pipedrive">Pipedrive</option>
+          <option value="hubspot">Hubspot</option>
+          <option value="salesforce">Salesforce</option>
+          <option value="oracle">Oracle</option>
+          <option value="zoho">Zoho CRM</option>
+          <option value="piperun">Piperun</option>
+          <option value="activecampaign">Active Campaign</option>
+          <option value="dynamics">Microsoft Dynamics 365</option>
+          <option value="bitrix24">Bitrix24</option>
+          <option value="agendor">Agendor</option>
+          <option value="moskit">Moskit</option>
+          <option value="kommo">Kommo CRM</option>
+          <option value="exactsales">Exact Sales</option>
+          <option value="ramper">Ramper</option>
+          <option value="other">Outro</option>
+        </select>
+        <div class="nuvia-error" id="nuvia-e3">Selecione o CRM utilizado.</div>
+      </div>
+
+      <!-- Step 5 -->
+      <div class="nuvia-step" id="nuvia-s4">
+        <div class="nuvia-step-label">Passo 5 de 6</div>
+        <div class="nuvia-question">Qual é o seu email corporativo?</div>
+        <input class="nuvia-input" id="nuvia-email" type="email" placeholder="voce@suaempresa.com" autocomplete="email">
+        <div class="nuvia-error" id="nuvia-e4">Use um email corporativo (não Gmail, Outlook, etc.)</div>
+      </div>
+
+      <!-- Step 6 -->
+      <div class="nuvia-step" id="nuvia-s5">
+        <div class="nuvia-step-label">Passo 6 de 6</div>
+        <div class="nuvia-question">Como podemos te chamar?</div>
+        <input class="nuvia-input" id="nuvia-nome" type="text" placeholder="Seu nome completo" autocomplete="name">
+        <div class="nuvia-error" id="nuvia-e5">Informe seu nome para continuar.</div>
+      </div>
+
+      <!-- Nav -->
+      <div class="nuvia-nav" id="nuvia-nav">
+        <button class="nuvia-btn-back" id="nuvia-back" style="display:none;" onclick="nuviaBack()">← Voltar</button>
+        <button class="nuvia-btn-next" id="nuvia-next" onclick="nuviaNext()">Continuar →</button>
+      </div>
+
+      <!-- Results -->
+      <div class="nuvia-result" id="nuvia-ok">
+        <div class="nuvia-result-badge ok">Perfil compatível com Nuvia AI</div>
+        <div class="nuvia-result-title" id="nuvia-ok-title">Ótimo!<br>Conseguimos te ajudar.</div>
+        <div class="nuvia-result-body">Agende agora uma sessão de diagnóstico com nosso especialista.</div>
+        <a class="nuvia-result-cta" href="https://meetings.hubspot.com/robson-lima/bate-papo-nuvia-ai" target="_blank">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          Agendar sessão
+        </a>
+      </div>
+      <div class="nuvia-result" id="nuvia-no">
+        <div class="nuvia-result-badge wait">Em análise</div>
+        <div class="nuvia-result-title">Você está no caminho certo.</div>
+        <div class="nuvia-result-body">Em breve um especialista Nuvia entrará em contato. Aguarde!</div>
+      </div>
+
+    </div>
+  </div><!-- /nuvia-panel -->
+
+  <!-- Bottom pill -->
+  <div class="nuvia-bottom">
+    <input class="nuvia-msg-input" id="nuvia-msg" type="text"
+      placeholder="Qual seu maior problema para qualificar leads?"
+      maxlength="300" autocomplete="off">
+    <div class="nuvia-actions">
+      <button class="nuvia-demo-btn" onclick="nuviaOpenForm()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        Agendar Demo
+      </button>
+      <div class="nuvia-divider"></div>
+      <button class="nuvia-teste-btn" id="nuvia-teste-btn" onclick="nuviaWapp()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        Teste Agora
+      </button>
+    </div>
+  </div>
+
+</div><!-- /nuvia-sdt2-wrap -->
+
+<!-- NUVIA DT2 :: Script -->
+<script>
+(function(){
+  var TOTAL=6, cur=0, probVal='', leadsVal='', teamVal='';
+  var probLabel='', leadsLabel='', teamLabel='';
+  var wrap, barEl, navEl, btnNext, btnBack;
+
+  // UTM / click ID capture
+  var urlParams=(function(){
+    var p={},q=window.location.search.slice(1).split('&');
+    q.forEach(function(pair){
+      var kv=pair.split('=');
+      if(kv[0]) p[decodeURIComponent(kv[0])]=decodeURIComponent(kv[1]||'');
+    });
+    return p;
+  })();
+  function utm(k){return urlParams[k]||'';}
+
+  var PERSONAL=["gmail.com","googlemail.com","outlook.com","hotmail.com","hotmail.com.br",
+    "live.com","live.com.br","msn.com","yahoo.com","yahoo.com.br","icloud.com","me.com",
+    "mac.com","protonmail.com","proton.me","aol.com","uol.com.br","bol.com.br",
+    "terra.com.br","ig.com.br","yandex.com","tutanota.com","fastmail.com"];
+
+  function isPersonal(e){var p=e.split("@");return p.length!==2||PERSONAL.indexOf(p[1].toLowerCase().trim())!==-1;}
+
+  function init(){
+    wrap    = document.getElementById('nuvia-sdt2-wrap');
+    barEl   = document.getElementById('nuvia-bar');
+    navEl   = document.getElementById('nuvia-nav');
+    btnNext = document.getElementById('nuvia-next');
+    btnBack = document.getElementById('nuvia-back');
+
+    // Close button
+    var closeBtn=document.getElementById('nuvia-close');
+    if(closeBtn) closeBtn.addEventListener('click', nuviaCloseForm);
+
+    // Show widget after 1.2s (or on scroll if preferred)
+    setTimeout(function(){
+      if(wrap) wrap.classList.add('nuvia-visible');
+    }, 1200);
+
+    // Bottom input Enter → WhatsApp
+    var msgInput=document.getElementById('nuvia-msg');
+    var testeBtn=document.getElementById('nuvia-teste-btn');
+    if(msgInput && testeBtn){
+      msgInput.addEventListener('keydown',function(e){
+        if(e.key==='Enter'){e.preventDefault();nuviaWapp();}
+      });
+      msgInput.addEventListener('input',function(){
+        testeBtn.textContent=this.value.trim()?'Enviar →':'Teste Agora';
+      });
+    }
+  }
+
+  function goTo(idx){
+    document.getElementById('nuvia-s'+cur).classList.remove('nuvia-active');
+    cur=idx;
+    document.getElementById('nuvia-s'+cur).classList.add('nuvia-active');
+    barEl.style.width=Math.round((idx/TOTAL)*100)+'%';
+    btnBack.style.display=idx>0?'block':'none';
+    btnNext.textContent=idx===TOTAL-1?'Enviar →':'Continuar →';
+  }
+
+  function showErr(errId,show,fieldId){
+    var el=document.getElementById(errId);
+    if(el) el.classList.toggle('nuvia-show',show);
+    if(fieldId){var f=document.getElementById(fieldId);if(f)f.classList.toggle('nuvia-field-err',show);}
+  }
+
+  function validate(){
+    if(cur===0){var ok=probVal!=='';showErr('nuvia-e0',!ok,null);return ok;}
+    if(cur===1){showErr('nuvia-e1',!leadsVal,null);return!!leadsVal;}
+    if(cur===2){showErr('nuvia-e2',!teamVal,null);return!!teamVal;}
+    if(cur===3){var v=document.getElementById('nuvia-crm').value;showErr('nuvia-e3',!v,'nuvia-crm');return!!v;}
+    if(cur===4){
+      var e=document.getElementById('nuvia-email').value.trim();
+      var ok=/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)&&!isPersonal(e);
+      showErr('nuvia-e4',!ok,'nuvia-email');return ok;
+    }
+    if(cur===5){var v=document.getElementById('nuvia-nome').value.trim();showErr('nuvia-e5',v.length<2,'nuvia-nome');return v.length>=2;}
+    return true;
+  }
+
+  function isDisqualified(){
+    var crm=document.getElementById('nuvia-crm').value;
+    return leadsVal==='lt500'&&(teamVal==='none'||teamVal==='1-3'||crm==='none');
+  }
+
+  function finish(){
+    navEl.style.display='none';
+    for(var i=0;i<TOTAL;i++){var s=document.getElementById('nuvia-s'+i);if(s)s.classList.remove('nuvia-active');}
+    barEl.style.width='100%';
+    var nomeCompleto=document.getElementById('nuvia-nome').value.trim();
+    var nome=nomeCompleto.split(' ')[0];
+    var crmEl=document.getElementById('nuvia-crm');
+    var crm=crmEl.value;
+    var crmLabel=crmEl.selectedIndex>0?crmEl.options[crmEl.selectedIndex].text:'';
+    var email=document.getElementById('nuvia-email').value.trim();
+    var qualificado=!isDisqualified();
+
+    fetch('https://nuvia-ai.app.n8n.cloud/webhook/ab6287ac-ffb9-43e4-8028-41248714e6de',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        nome:nomeCompleto,
+        email:email,
+        problema:probLabel,
+        leads:leadsLabel,
+        time:teamLabel,
+        crm:crmLabel,
+        qualificado:qualificado,
+        utm_source:utm('utm_source'),
+        utm_medium:utm('utm_medium'),
+        utm_campaign:utm('utm_campaign'),
+        utm_term:utm('utm_term'),
+        utm_content:utm('utm_content'),
+        fbclid:utm('fbclid'),
+        gclid:utm('gclid'),
+        msclkid:utm('msclkid'),
+        li_fat_id:utm('li_fat_id')
+      })
+    }).catch(function(){});
+
+    if(qualificado){
+      document.getElementById('nuvia-ok-title').innerHTML='Ótimo, '+nome+'!<br>Conseguimos te ajudar.';
+      document.getElementById('nuvia-ok').classList.add('nuvia-show');
+    } else {
+      document.getElementById('nuvia-no').classList.add('nuvia-show');
+    }
+  }
+
+  function reset(){
+    probVal='';leadsVal='';teamVal='';
+    probLabel='';leadsLabel='';teamLabel='';
+    document.querySelectorAll('.nuvia-opt').forEach(function(b){b.classList.remove('nuvia-sel');});
+    ['nuvia-crm','nuvia-email','nuvia-nome'].forEach(function(id){
+      var el=document.getElementById(id);
+      if(el){el.value='';el.classList.remove('nuvia-field-err');}
+    });
+    for(var i=0;i<TOTAL;i++){var e=document.getElementById('nuvia-e'+i);if(e)e.classList.remove('nuvia-show');}
+    ['nuvia-ok','nuvia-no'].forEach(function(id){var el=document.getElementById(id);if(el)el.classList.remove('nuvia-show');});
+    navEl.style.display='flex';
+    goTo(0);
+  }
+
+  function bindEnter(){
+    ['nuvia-email','nuvia-nome'].forEach(function(id){
+      var el=document.getElementById(id);
+      if(!el)return;
+      el.addEventListener('keydown',function(e){
+        if(e.key==='Enter'){e.preventDefault();nuviaNext();}
+      });
+    });
+    var crmEl=document.getElementById('nuvia-crm');
+    if(crmEl) crmEl.addEventListener('change',function(){if(this.value)setTimeout(function(){nuviaNext();},260);});
+  }
+
+  // Public API
+  window.nuviaSelectOpt=function(btn){
+    var group=btn.getAttribute('data-group')||'prob';
+    document.querySelectorAll('.nuvia-opt').forEach(function(b){
+      if((b.getAttribute('data-group')||'prob')===group) b.classList.remove('nuvia-sel');
+    });
+    btn.classList.add('nuvia-sel');
+    var val=btn.getAttribute('data-val');
+    var label=btn.textContent.trim();
+    if(group==='leads'){leadsVal=val;leadsLabel=label;}
+    else if(group==='team'){teamVal=val;teamLabel=label;}
+    else{probVal=val;probLabel=label;}
+    var stepIdx={prob:0,leads:1,team:2}[group];
+    var e=document.getElementById('nuvia-e'+stepIdx);if(e)e.classList.remove('nuvia-show');
+    setTimeout(function(){nuviaNext();},260);
+  };
+  window.nuviaNext=function(){if(!validate())return;cur<TOTAL-1?goTo(cur+1):finish();};
+  window.nuviaBack=function(){if(cur>0)goTo(cur-1);};
+  window.nuviaOpenForm=function(){
+    if(!wrap)init();
+    reset();
+    wrap.classList.add('nuvia-open');
+    bindEnter();
+    setTimeout(function(){
+      var s=document.getElementById('nuvia-s0');
+      if(s){var o=s.querySelector('.nuvia-opt');if(o)o.focus();}
+    },420);
+  };
+  window.nuviaCloseForm=function(){if(wrap)wrap.classList.remove('nuvia-open');};
+  window.nuviaWapp=function(){
+    var msg=document.getElementById('nuvia-msg').value.trim();
+    var base='https://wa.me/5511936209022';
+    window.open(msg?base+'?text='+encodeURIComponent(msg):base,'_blank');
+  };
+
+  // Boot
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded',init);
+  } else {
+    init();
+  }
+})();
+</script>

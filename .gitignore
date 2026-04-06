@@ -1,0 +1,18 @@
+# Ignorar tudo por padrão
+*
+
+# Incluir apenas o necessário para a landing page
+!nuvia-lp-whatsapp-agents-v2.html
+!.gitignore
+
+# Pasta de componentes
+!Componentes/
+!Componentes/sdt2-webflow.html
+
+# Assets referenciados pelo HTML
+!Nuvia Icons/
+!Nuvia Icons/Cópia de nuvia-symbol-gradient-intense.png
+
+!Nuvia Logos Horizontais/
+!Nuvia Logos Horizontais/nuvia-logo-horizontal-Dark.png
+!Nuvia Logos Horizontais/nuvia-logo-horizontal-white.png
