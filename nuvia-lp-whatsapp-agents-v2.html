@@ -883,15 +883,8 @@ footer{background:var(--navy);padding:52px 40px 32px;}
     </div>
 
     <!-- Video -->
-    <div class="video-wrap reveal" id="yt-player" onclick="loadVideo()">
-      <img src="https://img.youtube.com/vi/08edaRnLQD8/maxresdefault.jpg" onerror="this.src='https://img.youtube.com/vi/08edaRnLQD8/hqdefault.jpg'" alt="Como funciona o AI Agent Nuvia para WhatsApp">
-      <div class="video-overlay"></div>
-      <div class="video-play-btn">
-        <div class="play-circle">
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none"><polygon points="6,3 20,12 6,21" fill="#0D1B3E"/></svg>
-        </div>
-        <span class="play-label">Assistir demonstração</span>
-      </div>
+    <div class="video-wrap reveal">
+      <iframe src="https://www.youtube.com/embed/yZRsufqM3lI?rel=0&modestbranding=1" title="Demo Nuvia AI Agent" frameborder="0" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen style="position:absolute;top:0;left:0;width:100%;height:100%;"></iframe>
     </div>
 
     <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:48px;" class="reveal">
@@ -1553,7 +1546,7 @@ footer{background:var(--navy);padding:52px 40px 32px;}
 function loadVideo(){
   var c=document.getElementById('yt-player');
   c.style.cursor='default';c.onclick=null;
-  c.innerHTML='<iframe src="https://www.youtube.com/embed/08edaRnLQD8?autoplay=1&rel=0&modestbranding=1" title="Demo Nuvia AI Agent" frameborder="0" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen style="position:absolute;top:0;left:0;width:100%;height:100%;"></iframe>';
+  c.innerHTML='<iframe src="https://www.youtube.com/embed/yZRsufqM3lI?autoplay=1&rel=0&modestbranding=1" title="Demo Nuvia AI Agent" frameborder="0" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen style="position:absolute;top:0;left:0;width:100%;height:100%;"></iframe>';
 }
 
 // FAQ accordion
