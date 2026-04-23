@@ -1451,7 +1451,7 @@ footer{background:var(--navy);padding:52px 40px 32px;}
 
         <!-- Step 1: maior problema -->
         <div class="sdt2-step active" id="sdt2-s0">
-          <div class="sdt2-step-label">Passo 1 de 6</div>
+          <div class="sdt2-step-label">Passo 1 de 5</div>
           <div class="sdt2-question">Qual seu maior problema para qualificar leads?</div>
           <div class="sdt2-options">
             <button class="sdt2-option" data-val="noreply" onclick="sdt2SelectOpt(this)">Tempo de resposta do time</button>
@@ -1465,7 +1465,7 @@ footer{background:var(--navy);padding:52px 40px 32px;}
 
         <!-- Step 2: volume de leads -->
         <div class="sdt2-step" id="sdt2-s1">
-          <div class="sdt2-step-label">Passo 2 de 6</div>
+          <div class="sdt2-step-label">Passo 2 de 5</div>
           <div class="sdt2-question">Quantos leads você gera por mês?</div>
           <div class="sdt2-options">
             <button class="sdt2-option" data-group="leads" data-val="lt500" onclick="sdt2SelectOpt(this)">Menos de 500 por mês</button>
@@ -1478,7 +1478,7 @@ footer{background:var(--navy);padding:52px 40px 32px;}
 
         <!-- Step 3: time de vendas -->
         <div class="sdt2-step" id="sdt2-s2">
-          <div class="sdt2-step-label">Passo 3 de 6</div>
+          <div class="sdt2-step-label">Passo 3 de 5</div>
           <div class="sdt2-question">Qual é o tamanho do seu time de vendas?</div>
           <div class="sdt2-options">
             <button class="sdt2-option" data-group="team" data-val="none" onclick="sdt2SelectOpt(this)">Não tenho pessoas dedicadas</button>
@@ -1491,7 +1491,7 @@ footer{background:var(--navy);padding:52px 40px 32px;}
 
         <!-- Step 4: CRM -->
         <div class="sdt2-step" id="sdt2-s3">
-          <div class="sdt2-step-label">Passo 4 de 6</div>
+          <div class="sdt2-step-label">Passo 4 de 5</div>
           <div class="sdt2-question">Qual CRM você utiliza atualmente?</div>
           <select class="sdt2-select" id="sdt2-crm">
             <option value="">Selecione uma opção</option>
@@ -1518,19 +1518,12 @@ footer{background:var(--navy);padding:52px 40px 32px;}
 
         <!-- Step 5: email corporativo -->
         <div class="sdt2-step" id="sdt2-s4">
-          <div class="sdt2-step-label">Passo 5 de 6</div>
+          <div class="sdt2-step-label">Passo 5 de 5</div>
           <div class="sdt2-question">Qual é o seu email corporativo?</div>
           <input class="sdt2-input" id="sdt2-email" type="email" placeholder="voce@suaempresa.com" autocomplete="email">
           <div class="sdt2-error" id="sdt2-e4">Use um email corporativo (não Gmail, Outlook, etc.)</div>
         </div>
 
-        <!-- Step 6: nome -->
-        <div class="sdt2-step" id="sdt2-s5">
-          <div class="sdt2-step-label">Passo 6 de 6</div>
-          <div class="sdt2-question">Como podemos te chamar?</div>
-          <input class="sdt2-input" id="sdt2-nome" type="text" placeholder="Seu nome completo" autocomplete="name">
-          <div class="sdt2-error" id="sdt2-e5">Informe seu nome para continuar.</div>
-        </div>
 
       </div><!-- /sdt2-viewport -->
 
@@ -1609,7 +1602,7 @@ document.querySelectorAll('.reveal').forEach(function(el){revealObserver.observe
 
 // ── STICKY DT2 (inline expanding form) ──
 (function(){
-  var TOTAL=6, cur=0, probVal='', leadsVal='', teamVal='';
+  var TOTAL=5, cur=0, probVal='', leadsVal='', teamVal='';
   var probLabel='', leadsLabel='', teamLabel='';
   var wrap,panel,barEl,navEl,btnNext,btnBack;
 
@@ -1626,6 +1619,13 @@ document.querySelectorAll('.reveal').forEach(function(el){revealObserver.observe
     "terra.com.br","ig.com.br","yandex.com","tutanota.com","fastmail.com"];
 
   function isPersonal(e){var p=e.split("@");return p.length!==2||PERSONAL.indexOf(p[1].toLowerCase().trim())!==-1;}
+
+  function deduceName(email){
+    var local=email.split('@')[0];
+    var name=local.replace(/[._\-+]/g,' ');
+    name=name.replace(/\b\w/g,function(c){return c.toUpperCase();});
+    return name.trim();
+  }
 
   function init(){
     wrap=document.getElementById('sdt2-wrap');
@@ -1669,7 +1669,6 @@ document.querySelectorAll('.reveal').forEach(function(el){revealObserver.observe
       var ok=/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)&&!isPersonal(e);
       showErr('sdt2-e4',!ok,'sdt2-email');return ok;
     }
-    if(cur===5){var v=document.getElementById('sdt2-nome').value.trim();showErr('sdt2-e5',v.length<2,'sdt2-nome');return v.length>=2;}
     return true;
   }
 
@@ -1682,12 +1681,12 @@ document.querySelectorAll('.reveal').forEach(function(el){revealObserver.observe
     navEl.style.display='none';
     for(var i=0;i<TOTAL;i++){var s=document.getElementById('sdt2-s'+i);if(s)s.classList.remove('active');}
     barEl.style.width='100%';
-    var nome=document.getElementById('sdt2-nome').value.trim().split(' ')[0];
     var crmEl=document.getElementById('sdt2-crm');
     var crm=crmEl.value;
     var crmLabel=crmEl.selectedIndex>0?crmEl.options[crmEl.selectedIndex].text:'';
     var email=document.getElementById('sdt2-email').value.trim();
-    var nomeCompleto=document.getElementById('sdt2-nome').value.trim();
+    var nomeCompleto=deduceName(email);
+    var nome=nomeCompleto.split(' ')[0];
     var qualificado=!isDisqualified();
 
     fetch('https://nuvia-ai.app.n8n.cloud/webhook/ab6287ac-ffb9-43e4-8028-41248714e6de',{
@@ -1725,7 +1724,7 @@ document.querySelectorAll('.reveal').forEach(function(el){revealObserver.observe
     probVal='';leadsVal='';teamVal='';
     probLabel='';leadsLabel='';teamLabel='';
     document.querySelectorAll('.sdt2-option').forEach(function(b){b.classList.remove('selected');});
-    ['sdt2-leads','sdt2-team','sdt2-crm','sdt2-email','sdt2-nome'].forEach(function(id){
+    ['sdt2-crm','sdt2-email'].forEach(function(id){
       var el=document.getElementById(id);if(el){el.value='';el.classList.remove('sdt2-field-err');}
     });
     for(var i=0;i<TOTAL;i++){var e=document.getElementById('sdt2-e'+i);if(e)e.classList.remove('show');}
@@ -1751,7 +1750,7 @@ document.querySelectorAll('.reveal').forEach(function(el){revealObserver.observe
     setTimeout(function(){sdt2Next();},260);
   };
   function bindEnter(){
-    ['sdt2-email','sdt2-nome'].forEach(function(id){
+    ['sdt2-email'].forEach(function(id){
       var el=document.getElementById(id);
       if(!el)return;
       el.addEventListener('keydown',function(e){

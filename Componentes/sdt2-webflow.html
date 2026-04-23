@@ -180,7 +180,7 @@
 
       <!-- Step 1 -->
       <div class="nuvia-step nuvia-active" id="nuvia-s0">
-        <div class="nuvia-step-label">Passo 1 de 6</div>
+        <div class="nuvia-step-label">Passo 1 de 5</div>
         <div class="nuvia-question">Qual seu maior problema para qualificar leads?</div>
         <div class="nuvia-options">
           <button class="nuvia-opt" data-val="noreply" onclick="nuviaSelectOpt(this)">Tempo de resposta do time</button>
@@ -194,7 +194,7 @@
 
       <!-- Step 2 -->
       <div class="nuvia-step" id="nuvia-s1">
-        <div class="nuvia-step-label">Passo 2 de 6</div>
+        <div class="nuvia-step-label">Passo 2 de 5</div>
         <div class="nuvia-question">Quantos leads você gera por mês?</div>
         <div class="nuvia-options">
           <button class="nuvia-opt" data-group="leads" data-val="lt500" onclick="nuviaSelectOpt(this)">Menos de 500 por mês</button>
@@ -207,7 +207,7 @@
 
       <!-- Step 3 -->
       <div class="nuvia-step" id="nuvia-s2">
-        <div class="nuvia-step-label">Passo 3 de 6</div>
+        <div class="nuvia-step-label">Passo 3 de 5</div>
         <div class="nuvia-question">Qual é o tamanho do seu time de vendas?</div>
         <div class="nuvia-options">
           <button class="nuvia-opt" data-group="team" data-val="none" onclick="nuviaSelectOpt(this)">Não tenho pessoas dedicadas</button>
@@ -220,7 +220,7 @@
 
       <!-- Step 4 -->
       <div class="nuvia-step" id="nuvia-s3">
-        <div class="nuvia-step-label">Passo 4 de 6</div>
+        <div class="nuvia-step-label">Passo 4 de 5</div>
         <div class="nuvia-question">Qual CRM você utiliza atualmente?</div>
         <select class="nuvia-select" id="nuvia-crm">
           <option value="">Selecione uma opção</option>
@@ -247,19 +247,12 @@
 
       <!-- Step 5 -->
       <div class="nuvia-step" id="nuvia-s4">
-        <div class="nuvia-step-label">Passo 5 de 6</div>
+        <div class="nuvia-step-label">Passo 5 de 5</div>
         <div class="nuvia-question">Qual é o seu email corporativo?</div>
         <input class="nuvia-input" id="nuvia-email" type="email" placeholder="voce@suaempresa.com" autocomplete="email">
         <div class="nuvia-error" id="nuvia-e4">Use um email corporativo (não Gmail, Outlook, etc.)</div>
       </div>
 
-      <!-- Step 6 -->
-      <div class="nuvia-step" id="nuvia-s5">
-        <div class="nuvia-step-label">Passo 6 de 6</div>
-        <div class="nuvia-question">Como podemos te chamar?</div>
-        <input class="nuvia-input" id="nuvia-nome" type="text" placeholder="Seu nome completo" autocomplete="name">
-        <div class="nuvia-error" id="nuvia-e5">Informe seu nome para continuar.</div>
-      </div>
 
       <!-- Nav -->
       <div class="nuvia-nav" id="nuvia-nav">
@@ -309,7 +302,7 @@
 <!-- NUVIA DT2 :: Script -->
 <script>
 (function(){
-  var TOTAL=6, cur=0, probVal='', leadsVal='', teamVal='';
+  var TOTAL=5, cur=0, probVal='', leadsVal='', teamVal='';
   var probLabel='', leadsLabel='', teamLabel='';
   var wrap, barEl, navEl, btnNext, btnBack;
 
@@ -330,6 +323,13 @@
     "terra.com.br","ig.com.br","yandex.com","tutanota.com","fastmail.com"];
 
   function isPersonal(e){var p=e.split("@");return p.length!==2||PERSONAL.indexOf(p[1].toLowerCase().trim())!==-1;}
+
+  function deduceName(email){
+    var local=email.split('@')[0];
+    var name=local.replace(/[._\-+]/g,' ');
+    name=name.replace(/\b\w/g,function(c){return c.toUpperCase();});
+    return name.trim();
+  }
 
   function init(){
     wrap    = document.getElementById('nuvia-sdt2-wrap');
@@ -385,7 +385,6 @@
       var ok=/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)&&!isPersonal(e);
       showErr('nuvia-e4',!ok,'nuvia-email');return ok;
     }
-    if(cur===5){var v=document.getElementById('nuvia-nome').value.trim();showErr('nuvia-e5',v.length<2,'nuvia-nome');return v.length>=2;}
     return true;
   }
 
@@ -398,12 +397,12 @@
     navEl.style.display='none';
     for(var i=0;i<TOTAL;i++){var s=document.getElementById('nuvia-s'+i);if(s)s.classList.remove('nuvia-active');}
     barEl.style.width='100%';
-    var nomeCompleto=document.getElementById('nuvia-nome').value.trim();
+    var email=document.getElementById('nuvia-email').value.trim();
+    var nomeCompleto=deduceName(email);
     var nome=nomeCompleto.split(' ')[0];
     var crmEl=document.getElementById('nuvia-crm');
     var crm=crmEl.value;
     var crmLabel=crmEl.selectedIndex>0?crmEl.options[crmEl.selectedIndex].text:'';
-    var email=document.getElementById('nuvia-email').value.trim();
     var qualificado=!isDisqualified();
 
     fetch('https://nuvia-ai.app.n8n.cloud/webhook/ab6287ac-ffb9-43e4-8028-41248714e6de',{
@@ -441,7 +440,7 @@
     probVal='';leadsVal='';teamVal='';
     probLabel='';leadsLabel='';teamLabel='';
     document.querySelectorAll('.nuvia-opt').forEach(function(b){b.classList.remove('nuvia-sel');});
-    ['nuvia-crm','nuvia-email','nuvia-nome'].forEach(function(id){
+    ['nuvia-crm','nuvia-email'].forEach(function(id){
       var el=document.getElementById(id);
       if(el){el.value='';el.classList.remove('nuvia-field-err');}
     });
@@ -452,7 +451,7 @@
   }
 
   function bindEnter(){
-    ['nuvia-email','nuvia-nome'].forEach(function(id){
+    ['nuvia-email'].forEach(function(id){
       var el=document.getElementById(id);
       if(!el)return;
       el.addEventListener('keydown',function(e){
