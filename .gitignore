@@ -16,3 +16,7 @@
 !Nuvia Logos Horizontais/
 !Nuvia Logos Horizontais/nuvia-logo-horizontal-Dark.png
 !Nuvia Logos Horizontais/nuvia-logo-horizontal-white.png
+
+# Logos de clientes
+!logo clientes/
+!logo clientes/*.svg

@@ -225,14 +225,13 @@ nav{
 /* ── LOGOS ── */
 .logos-strip{padding:48px 0;background:rgba(255,255,255,.72);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);}
 .logos-label{text-align:center;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text-muted);margin-bottom:28px;}
-.logos-row{display:flex;align-items:center;justify-content:center;gap:48px;flex-wrap:wrap;}
-.logo-pill{
-  display:inline-flex;align-items:center;gap:8px;
-  font-size:15px;font-weight:800;color:#CBD5E1;letter-spacing:-0.5px;
-  transition:color .2s;
+.logos-row{display:flex;align-items:center;justify-content:center;gap:40px;flex-wrap:wrap;}
+.logo-item{
+  display:flex;align-items:center;justify-content:center;
+  opacity:.45;transition:opacity .2s;
 }
-.logo-pill:hover{color:#94A3B8;}
-.logo-pill-icon{width:22px;height:22px;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.logo-item:hover{opacity:.75;}
+.logo-item img{height:32px;width:auto;max-width:120px;object-fit:contain;}
 
 /* ── METRICS ── */
 .metrics-bg{background:transparent;padding:88px 0;}
@@ -795,12 +794,21 @@ footer{background:var(--navy);padding:52px 40px 32px;}
   <div class="container">
     <p class="logos-label">Empresas que já escalam com Nuvia</p>
     <div class="logos-row">
-      <span class="logo-pill">TechCorp Brasil</span>
-      <span class="logo-pill">VendasPro</span>
-      <span class="logo-pill">GrowthX</span>
-      <span class="logo-pill">SalesForce BR</span>
-      <span class="logo-pill">LeadGen Co</span>
-      <span class="logo-pill">ScaleUp</span>
+      <div class="logo-item"><img src="logo clientes/logo-stone.svg" alt="Stone"></div>
+      <div class="logo-item"><img src="logo clientes/logo-loft.svg" alt="Loft"></div>
+      <div class="logo-item"><img src="logo clientes/logo-votorantim.svg" alt="Votorantim"></div>
+      <div class="logo-item"><img src="logo clientes/logo-flash.svg" alt="Flash"></div>
+      <div class="logo-item"><img src="logo clientes/logo-kamino.svg" alt="Kamino"></div>
+      <div class="logo-item"><img src="logo clientes/logo-sami.svg" alt="Sami"></div>
+      <div class="logo-item"><img src="logo clientes/logo-nord.svg" alt="Nord"></div>
+      <div class="logo-item"><img src="logo clientes/logo-lemon.svg" alt="Lemon"></div>
+      <div class="logo-item"><img src="logo clientes/logo-solides.svg" alt="Sólides"></div>
+      <div class="logo-item"><img src="logo clientes/logo-grupojohn.svg" alt="Grupo John"></div>
+      <div class="logo-item"><img src="logo clientes/logo-justpay.svg" alt="JustPay"></div>
+      <div class="logo-item"><img src="logo clientes/logo-cerc.svg" alt="Cerc"></div>
+      <div class="logo-item"><img src="logo clientes/logo-calta.svg" alt="Calta"></div>
+      <div class="logo-item"><img src="logo clientes/logo-splitC.svg" alt="SplitC"></div>
+      <div class="logo-item"><img src="logo clientes/logo-educationjourney.svg" alt="Education Journey"></div>
     </div>
   </div>
 </div>
@@ -1087,6 +1095,7 @@ footer{background:var(--navy);padding:52px 40px 32px;}
     </div>
     <div class="testi-grid reveal">
 
+      <!-- Tony — featured -->
       <div class="testi-card featured">
         <div class="quote-mark">"</div>
         <div class="testi-stars">
@@ -1097,21 +1106,22 @@ footer{background:var(--navy);padding:52px 40px 32px;}
           <svg width="14" height="14" viewBox="0 0 24 24" fill="#F97316"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
         </div>
         <p class="testi-text">
-          "Antes da Nuvia, nosso time de 3 SDRs respondia talvez 30% dos leads no mesmo dia. Hoje o AI Agent responde <strong>100% em menos de 1 minuto</strong> — e nossos SDRs só entram em calls com leads já qualificados. Triplicamos reuniões sem contratar ninguém."
+          "Nossa equipe é enxuta, e a Nuvia nos deu <strong>fôlego de verdade</strong>. O atendimento ficou mais ágil, o time respira melhor, e já estamos pensando em expandir o uso da IA para o suporte também."
         </p>
         <div class="testi-author">
-          <div class="testi-avatar">R</div>
+          <div class="testi-avatar">T</div>
           <div>
-            <div class="testi-name">Rafael Mendes</div>
-            <div class="testi-role">Head of Sales · TechCorp Brasil</div>
+            <div class="testi-name">Tony</div>
+            <div class="testi-role">Founder · Tony SkiConcept</div>
           </div>
         </div>
         <div class="testi-badge">
-          <span class="badge-pill" style="background:rgba(20,184,166,.2);color:#14B8A6;">3× reuniões</span>
-          <span class="badge-pill" style="background:rgba(255,255,255,.12);color:rgba(255,255,255,.8);">100% respondidos</span>
+          <span class="badge-pill" style="background:rgba(20,184,166,.2);color:#14B8A6;">Atendimento ágil</span>
+          <span class="badge-pill" style="background:rgba(255,255,255,.12);color:rgba(255,255,255,.8);">Time focado</span>
         </div>
       </div>
 
+      <!-- Kristin -->
       <div class="testi-card">
         <div class="quote-mark">"</div>
         <div class="testi-stars">
@@ -1122,21 +1132,21 @@ footer{background:var(--navy);padding:52px 40px 32px;}
           <svg width="14" height="14" viewBox="0 0 24 24" fill="#F97316"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
         </div>
         <p class="testi-text">
-          "Implantamos em 2 dias. Na primeira semana, <strong>o agente qualificou 47 leads</strong> que estariam esperando nossa equipe de vendas. A taxa de no-show nas reuniões caiu 40% porque o lead já chegava preparado."
+          "A plataforma está sendo bem eficiente. Conseguimos <strong>melhorar o processo de atendimento e vendas na Páscoa</strong> e estamos evoluindo cada vez mais com a Nuvia."
         </p>
         <div class="testi-author">
-          <div class="testi-avatar" style="background:linear-gradient(135deg,#14B8A6,#22C55E);">A</div>
+          <div class="testi-avatar" style="background:linear-gradient(135deg,#EC4899,#F97316);">K</div>
           <div>
-            <div class="testi-name">Ana Beatriz Costa</div>
-            <div class="testi-role">VP de Growth · GrowthX</div>
+            <div class="testi-name">Kristin Chu</div>
+            <div class="testi-role">Diretora Comercial · Chocolat du Jour</div>
           </div>
         </div>
         <div class="testi-badge">
-          <span class="badge-pill" style="background:rgba(20,184,166,.1);color:var(--teal);">47 leads em 7 dias</span>
-          <span class="badge-pill" style="background:rgba(124,58,237,.1);color:var(--purple);">–40% no-show</span>
+          <span class="badge-pill" style="background:rgba(236,72,153,.1);color:#EC4899;">Vendas & Atendimento</span>
         </div>
       </div>
 
+      <!-- Marcio -->
       <div class="testi-card">
         <div class="quote-mark">"</div>
         <div class="testi-stars">
@@ -1147,18 +1157,18 @@ footer{background:var(--navy);padding:52px 40px 32px;}
           <svg width="14" height="14" viewBox="0 0 24 24" fill="#F97316"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
         </div>
         <p class="testi-text">
-          "O ROI foi absurdo. Em 90 dias, o custo por reunião caiu de R$ 340 para R$ 87. <strong>Nosso pipeline cresceu 4× sem aumentar a equipe.</strong> O que mais me surpreendeu foi a qualidade das conversas — os leads não percebem que é IA."
+          "Migramos da Blip para a Nuvia e a experiência foi bastante positiva. A plataforma se mostrou <strong>muito mais simples de usar no dia a dia</strong> e o suporte foi rápido e eficiente na transição."
         </p>
         <div class="testi-author">
-          <div class="testi-avatar" style="background:linear-gradient(135deg,#F97316,#EC4899);">M</div>
+          <div class="testi-avatar" style="background:linear-gradient(135deg,#7C3AED,#14B8A6);">M</div>
           <div>
-            <div class="testi-name">Marcelo Nunes</div>
-            <div class="testi-role">CEO · SalesHub</div>
+            <div class="testi-name">Marcio Minuzzi</div>
+            <div class="testi-role">Co-fundador · Top2You</div>
           </div>
         </div>
         <div class="testi-badge">
-          <span class="badge-pill" style="background:rgba(249,115,22,.1);color:var(--orange);">4× pipeline</span>
-          <span class="badge-pill" style="background:rgba(236,72,153,.1);color:var(--pink);">ROI em 90 dias</span>
+          <span class="badge-pill" style="background:rgba(124,58,237,.1);color:var(--purple);">Migração do Blip</span>
+          <span class="badge-pill" style="background:rgba(20,184,166,.1);color:var(--teal);">Suporte ágil</span>
         </div>
       </div>
 
