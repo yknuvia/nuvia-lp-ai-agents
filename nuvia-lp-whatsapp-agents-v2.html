@@ -225,13 +225,28 @@ nav{
 /* ── LOGOS ── */
 .logos-strip{padding:48px 0;background:rgba(255,255,255,.72);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);}
 .logos-label{text-align:center;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text-muted);margin-bottom:28px;}
-.logos-row{display:flex;align-items:center;justify-content:center;gap:40px;flex-wrap:wrap;}
-.logo-item{
-  display:flex;align-items:center;justify-content:center;
-  opacity:.45;transition:opacity .2s;
+.logos-marquee-wrap{overflow:hidden;position:relative;}
+.logos-marquee-wrap::before,.logos-marquee-wrap::after{
+  content:'';position:absolute;top:0;bottom:0;width:80px;z-index:2;pointer-events:none;
 }
-.logo-item:hover{opacity:.75;}
-.logo-item img{height:32px;width:auto;max-width:120px;object-fit:contain;}
+.logos-marquee-wrap::before{left:0;background:linear-gradient(to right,rgba(255,255,255,.72),transparent);}
+.logos-marquee-wrap::after{right:0;background:linear-gradient(to left,rgba(255,255,255,.72),transparent);}
+.logos-marquee-track{
+  display:flex;align-items:center;gap:56px;
+  width:max-content;
+  animation:marquee 28s linear infinite;
+}
+.logos-marquee-wrap:hover .logos-marquee-track{animation-play-state:paused;}
+@keyframes marquee{
+  from{transform:translateX(0);}
+  to{transform:translateX(-50%);}
+}
+.logo-item{
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  opacity:.4;transition:opacity .2s;
+}
+.logo-item:hover{opacity:.72;}
+.logo-item img{height:30px;width:auto;max-width:130px;object-fit:contain;}
 
 /* ── METRICS ── */
 .metrics-bg{background:transparent;padding:88px 0;}
@@ -793,22 +808,41 @@ footer{background:var(--navy);padding:52px 40px 32px;}
 <div class="logos-strip">
   <div class="container">
     <p class="logos-label">Empresas que já escalam com Nuvia</p>
-    <div class="logos-row">
-      <div class="logo-item"><img src="logo clientes/logo-stone.svg" alt="Stone"></div>
-      <div class="logo-item"><img src="logo clientes/logo-loft.svg" alt="Loft"></div>
-      <div class="logo-item"><img src="logo clientes/logo-votorantim.svg" alt="Votorantim"></div>
-      <div class="logo-item"><img src="logo clientes/logo-flash.svg" alt="Flash"></div>
-      <div class="logo-item"><img src="logo clientes/logo-kamino.svg" alt="Kamino"></div>
-      <div class="logo-item"><img src="logo clientes/logo-sami.svg" alt="Sami"></div>
-      <div class="logo-item"><img src="logo clientes/logo-nord.svg" alt="Nord"></div>
-      <div class="logo-item"><img src="logo clientes/logo-lemon.svg" alt="Lemon"></div>
-      <div class="logo-item"><img src="logo clientes/logo-solides.svg" alt="Sólides"></div>
-      <div class="logo-item"><img src="logo clientes/logo-grupojohn.svg" alt="Grupo John"></div>
-      <div class="logo-item"><img src="logo clientes/logo-justpay.svg" alt="JustPay"></div>
-      <div class="logo-item"><img src="logo clientes/logo-cerc.svg" alt="Cerc"></div>
-      <div class="logo-item"><img src="logo clientes/logo-calta.svg" alt="Calta"></div>
-      <div class="logo-item"><img src="logo clientes/logo-splitC.svg" alt="SplitC"></div>
-      <div class="logo-item"><img src="logo clientes/logo-educationjourney.svg" alt="Education Journey"></div>
+    <div class="logos-marquee-wrap">
+      <div class="logos-marquee-track">
+        <!-- set 1 -->
+        <div class="logo-item"><img src="logo clientes/logo-stone.svg" alt="Stone"></div>
+        <div class="logo-item"><img src="logo clientes/logo-loft.svg" alt="Loft"></div>
+        <div class="logo-item"><img src="logo clientes/logo-votorantim.svg" alt="Votorantim"></div>
+        <div class="logo-item"><img src="logo clientes/logo-flash.svg" alt="Flash"></div>
+        <div class="logo-item"><img src="logo clientes/logo-kamino.svg" alt="Kamino"></div>
+        <div class="logo-item"><img src="logo clientes/logo-sami.svg" alt="Sami"></div>
+        <div class="logo-item"><img src="logo clientes/logo-nord.svg" alt="Nord"></div>
+        <div class="logo-item"><img src="logo clientes/logo-lemon.svg" alt="Lemon"></div>
+        <div class="logo-item"><img src="logo clientes/logo-solides.svg" alt="Sólides"></div>
+        <div class="logo-item"><img src="logo clientes/logo-grupojohn.svg" alt="Grupo John"></div>
+        <div class="logo-item"><img src="logo clientes/logo-justpay.svg" alt="JustPay"></div>
+        <div class="logo-item"><img src="logo clientes/logo-cerc.svg" alt="Cerc"></div>
+        <div class="logo-item"><img src="logo clientes/logo-calta.svg" alt="Calta"></div>
+        <div class="logo-item"><img src="logo clientes/logo-splitC.svg" alt="SplitC"></div>
+        <div class="logo-item"><img src="logo clientes/logo-educationjourney.svg" alt="Education Journey"></div>
+        <!-- set 2 — duplicado para loop seamless -->
+        <div class="logo-item"><img src="logo clientes/logo-stone.svg" alt="Stone"></div>
+        <div class="logo-item"><img src="logo clientes/logo-loft.svg" alt="Loft"></div>
+        <div class="logo-item"><img src="logo clientes/logo-votorantim.svg" alt="Votorantim"></div>
+        <div class="logo-item"><img src="logo clientes/logo-flash.svg" alt="Flash"></div>
+        <div class="logo-item"><img src="logo clientes/logo-kamino.svg" alt="Kamino"></div>
+        <div class="logo-item"><img src="logo clientes/logo-sami.svg" alt="Sami"></div>
+        <div class="logo-item"><img src="logo clientes/logo-nord.svg" alt="Nord"></div>
+        <div class="logo-item"><img src="logo clientes/logo-lemon.svg" alt="Lemon"></div>
+        <div class="logo-item"><img src="logo clientes/logo-solides.svg" alt="Sólides"></div>
+        <div class="logo-item"><img src="logo clientes/logo-grupojohn.svg" alt="Grupo John"></div>
+        <div class="logo-item"><img src="logo clientes/logo-justpay.svg" alt="JustPay"></div>
+        <div class="logo-item"><img src="logo clientes/logo-cerc.svg" alt="Cerc"></div>
+        <div class="logo-item"><img src="logo clientes/logo-calta.svg" alt="Calta"></div>
+        <div class="logo-item"><img src="logo clientes/logo-splitC.svg" alt="SplitC"></div>
+        <div class="logo-item"><img src="logo clientes/logo-educationjourney.svg" alt="Education Journey"></div>
+      </div>
     </div>
   </div>
 </div>
