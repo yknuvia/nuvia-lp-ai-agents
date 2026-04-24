@@ -8,7 +8,7 @@
 
 # Pasta de componentes
 !Componentes/
-!Componentes/sdt2-webflow.html
+!Componentes/sdt2-inbound.html
 !Componentes/outbound-widget.html
 
 # Assets referenciados pelo HTML
