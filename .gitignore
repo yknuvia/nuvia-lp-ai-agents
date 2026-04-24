@@ -9,6 +9,7 @@
 # Pasta de componentes
 !Componentes/
 !Componentes/sdt2-inbound.html
+!Componentes/sdt2-outbound.html
 !Componentes/outbound-widget.html
 
 # Assets referenciados pelo HTML
