@@ -1,0 +1,542 @@
+<!--
+  ╔══════════════════════════════════════════════════════════════╗
+  ║  NUVIA AI — Widget SDT2 Neutro (Triage)                     ║
+  ║  Roteia automaticamente para fluxo Inbound ou Outbound      ║
+  ║  INSTRUÇÃO DE USO NO WEBFLOW:                               ║
+  ║  1. Abra o projeto no Webflow Designer                      ║
+  ║  2. Vá em Pages → (página desejada) → Page Settings        ║
+  ║  3. Cole TODO este código em "Before </body> tag"           ║
+  ║  4. Publish. O widget aparece 1,2s após o carregamento.     ║
+  ╚══════════════════════════════════════════════════════════════╝
+-->
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+/* ── NUVIA SDT2 NEUTRO ── */
+#nnt-wrap{
+  position:fixed;bottom:24px;right:24px;
+  z-index:99999;display:flex;flex-direction:column;
+  width:340px;
+  transform:translateY(120px);opacity:0;
+  transition:transform .4s cubic-bezier(.34,1.56,.64,1),opacity .3s ease,box-shadow .3s;
+  border-radius:22px;
+  font-family:'Plus Jakarta Sans',sans-serif;
+}
+#nnt-wrap.nnt-visible{transform:translateY(0);opacity:1;}
+#nnt-wrap.nnt-open{box-shadow:0 0 0 2px #6366F1,0 12px 48px rgba(99,102,241,.25);}
+/* Modal */
+.nnt-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.52);backdrop-filter:blur(5px);z-index:99998;}
+.nnt-backdrop.show{display:block;}
+#nnt-wrap.nnt-modal{top:50%;left:50%;right:auto;bottom:auto;transform:translate(-50%,-50%) !important;width:420px;z-index:99999;}
+#nnt-wrap.nnt-modal .nnt-bottom{display:none;}
+#nnt-wrap.nnt-modal .nnt-panel{max-height:580px;border-radius:22px;}
+#nnt-wrap.nnt-modal{border-radius:22px;}
+/* Panel */
+.nnt-panel{overflow:hidden;max-height:0;transition:max-height .42s cubic-bezier(.4,0,.2,1);background:#0D1B3E;border-radius:22px 22px 0 0;}
+#nnt-wrap.nnt-open .nnt-panel{max-height:500px;}
+.nnt-panel-inner{padding:16px 16px 10px;}
+/* Progress */
+.nnt-progress{height:3px;background:rgba(255,255,255,.1);border-radius:2px;margin-bottom:10px;overflow:hidden;}
+.nnt-bar{height:100%;background:linear-gradient(135deg,#7C3AED,#6366F1,#0EA5E9);border-radius:2px;transition:width .3s;width:0%;}
+/* Close */
+.nnt-close{float:right;margin:-2px -4px 8px 0;background:none;border:none;cursor:pointer;color:rgba(255,255,255,.35);padding:4px;border-radius:6px;transition:color .15s,background .15s;line-height:0;}
+.nnt-close:hover{color:#fff;background:rgba(255,255,255,.1);}
+/* Step label */
+.nnt-step-label{font-size:10px;font-weight:700;color:rgba(255,255,255,.38);letter-spacing:.7px;text-transform:uppercase;margin-bottom:7px;}
+/* Steps */
+.nnt-step{display:none;}
+.nnt-step.nnt-active{display:block;}
+.nnt-question{font-size:13px;font-weight:700;color:#fff;line-height:1.4;margin-bottom:12px;}
+.nnt-step-hint{font-size:11px;color:rgba(255,255,255,.4);margin:-6px 0 10px;font-weight:500;}
+/* Options */
+.nnt-options{display:flex;flex-direction:column;gap:5px;}
+.nnt-opt{
+  display:block;width:100%;padding:8px 11px;border-radius:9px;
+  border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);
+  color:rgba(255,255,255,.72);font-size:12px;font-weight:600;
+  cursor:pointer;transition:all .15s;font-family:'Plus Jakarta Sans',sans-serif;text-align:left;
+}
+.nnt-opt:hover{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.2);color:#fff;}
+.nnt-opt.nnt-sel{background:rgba(99,102,241,.3);border-color:#6366F1;color:#fff;}
+.nnt-opt.nnt-exclusive{border-style:dashed;color:rgba(255,255,255,.5);}
+.nnt-opt.nnt-exclusive.nnt-sel{background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.3);border-style:dashed;color:rgba(255,255,255,.7);}
+/* Fields */
+.nnt-select,.nnt-input{
+  width:100%;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);
+  border-radius:10px;padding:9px 12px;font-family:'Plus Jakarta Sans',sans-serif;
+  font-size:13px;font-weight:500;color:#fff;outline:none;
+  -webkit-appearance:none;appearance:none;transition:background .15s,border-color .15s;box-sizing:border-box;
+}
+.nnt-select option{background:#0D1B3E;color:#fff;}
+.nnt-select:focus,.nnt-input:focus{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.25);}
+.nnt-input::placeholder{color:rgba(255,255,255,.3);}
+.nnt-error{font-size:11px;color:#FB923C;margin-top:5px;display:none;}
+.nnt-error.nnt-show{display:block;}
+.nnt-field-err{border-color:#FB923C !important;}
+/* Nav */
+.nnt-nav{display:flex;align-items:center;justify-content:space-between;margin-top:10px;}
+.nnt-btn-next{
+  background:linear-gradient(135deg,#6366F1,#8B5CF6);color:#fff;
+  font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;font-weight:700;
+  padding:8px 16px;border-radius:8px;border:none;cursor:pointer;transition:opacity .15s;
+}
+.nnt-btn-next:hover{opacity:.88;}
+.nnt-btn-back{background:none;border:none;color:rgba(255,255,255,.38);font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;font-weight:600;cursor:pointer;padding:8px 0;transition:color .15s;}
+.nnt-btn-back:hover{color:rgba(255,255,255,.75);}
+/* Results */
+.nnt-result{display:none;padding:12px 4px 8px;text-align:center;}
+.nnt-result.nnt-show{display:block;}
+.nnt-result-badge{display:inline-block;font-size:11px;font-weight:700;padding:4px 12px;border-radius:9999px;margin-bottom:8px;}
+.nnt-result-badge.ok{background:rgba(20,184,166,.2);color:#14B8A6;}
+.nnt-result-badge.wait{background:rgba(99,102,241,.2);color:#818CF8;}
+.nnt-result-title{font-size:14px;font-weight:800;color:#fff;line-height:1.3;margin-bottom:7px;}
+.nnt-result-body{font-size:12px;color:rgba(255,255,255,.55);margin-bottom:12px;line-height:1.4;}
+.nnt-result-cta{
+  display:inline-flex;align-items:center;gap:6px;background:#14B8A6;color:#fff;
+  font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;font-weight:700;
+  padding:8px 16px;border-radius:9px;transition:opacity .15s;text-decoration:none;
+}
+.nnt-result-cta:hover{opacity:.88;}
+/* Bottom pill */
+.nnt-bottom{background:#0D1B3E;padding:12px;}
+#nnt-wrap:not(.nnt-open) .nnt-bottom{border-radius:22px;}
+#nnt-wrap.nnt-open .nnt-bottom{border-top:1px solid rgba(255,255,255,.08);border-radius:0 0 20px 20px;}
+.nnt-msg-input{
+  width:100%;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.14);
+  border-radius:12px;padding:10px 14px;margin-bottom:8px;
+  font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:500;color:#fff;outline:none;
+  max-height:60px;transition:max-height .35s ease,opacity .25s ease,margin .35s ease,padding .35s ease;box-sizing:border-box;
+}
+.nnt-msg-input::placeholder{color:rgba(255,255,255,.35);}
+.nnt-msg-input:focus{background:rgba(255,255,255,.15);border-color:rgba(255,255,255,.28);}
+#nnt-wrap.nnt-open .nnt-msg-input{max-height:0;margin-bottom:0;padding-top:0;padding-bottom:0;opacity:0;pointer-events:none;overflow:hidden;}
+.nnt-actions{display:flex;align-items:center;}
+.nnt-demo-btn{
+  background:none;border:none;color:#fff;display:flex;align-items:center;gap:7px;
+  font-size:13px;font-weight:700;padding:9px 14px;border-radius:10px;cursor:pointer;
+  transition:background .15s;flex:1;justify-content:center;font-family:'Plus Jakarta Sans',sans-serif;
+}
+.nnt-demo-btn:hover{background:rgba(255,255,255,.08);}
+.nnt-divider{width:1px;height:20px;background:rgba(255,255,255,.15);flex-shrink:0;}
+.nnt-wapp-btn{
+  display:flex;align-items:center;justify-content:center;gap:7px;flex:1;
+  background:#25D366;color:#fff;font-family:'Plus Jakarta Sans',sans-serif;
+  font-size:13px;font-weight:700;padding:9px 14px;border-radius:10px;border:none;
+  cursor:pointer;transition:background .15s,transform .1s;
+}
+.nnt-wapp-btn:hover{background:#20b858;transform:scale(1.02);}
+.nnt-wapp-btn:active{transform:scale(.98);}
+/* Mobile */
+@media(max-width:900px){
+  #nnt-wrap{right:auto;left:50%;transform:translateX(-50%) translateY(120px);width:calc(100% - 32px);max-width:400px;}
+  #nnt-wrap.nnt-visible{transform:translateX(-50%) translateY(0);}
+  #nnt-wrap.nnt-open{transform:translateX(-50%) translateY(0);}
+  #nnt-wrap.nnt-modal{transform:translate(-50%,-50%) !important;width:calc(100% - 32px);}
+}
+</style>
+
+<div class="nnt-backdrop" id="nnt-backdrop"></div>
+
+<div id="nnt-wrap">
+
+  <div class="nnt-panel">
+    <div class="nnt-panel-inner">
+
+      <button class="nnt-close" id="nnt-close" aria-label="Fechar">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+      <div class="nnt-progress"><div class="nnt-bar" id="nnt-bar"></div></div>
+      <div class="nnt-step-label" id="nnt-step-label"></div>
+
+      <!-- Step 0 — Prioridade (triage) -->
+      <div class="nnt-step nnt-active" id="nnt-s0">
+        <div class="nnt-question">Qual é a sua prioridade no momento?</div>
+        <div class="nnt-options">
+          <button class="nnt-opt" data-group="prob" data-val="ob-linkedin" onclick="nntSelectOpt(this)">Gerar oportunidades qualificadas com o Outbound 4.0 por LinkedIn/Email.</button>
+          <button class="nnt-opt" data-group="prob" data-val="ib-qualify" onclick="nntSelectOpt(this)">Tenho um bom volume de leads que quero qualificar melhor.</button>
+          <button class="nnt-opt" data-group="prob" data-val="ob-data" onclick="nntSelectOpt(this)">Quero dados mais precisos para otimizar minha prospecção.</button>
+          <button class="nnt-opt" data-group="prob" data-val="ob-auto" onclick="nntSelectOpt(this)">Quero automatizar abordagens outbound personalizadas para leads B2B.</button>
+          <button class="nnt-opt" data-group="prob" data-val="unknown" onclick="nntSelectOpt(this)">Não sei ao certo, estou explorando.</button>
+        </div>
+        <div class="nnt-error" id="nnt-e0">Selecione uma opção para continuar.</div>
+      </div>
+
+      <!-- Step canal — apenas para "Não sei ao certo" -->
+      <div class="nnt-step" id="nnt-s-canal">
+        <div class="nnt-question">Você já usa algum canal para prospecção Outbound?</div>
+        <div class="nnt-step-hint">Marque todos os correspondentes e clique em continuar</div>
+        <div class="nnt-options">
+          <button class="nnt-opt" data-group="canal" data-val="Email" onclick="nntSelectOpt(this)">Email</button>
+          <button class="nnt-opt" data-group="canal" data-val="Whatsapp" onclick="nntSelectOpt(this)">WhatsApp</button>
+          <button class="nnt-opt" data-group="canal" data-val="Linkedin" onclick="nntSelectOpt(this)">LinkedIn</button>
+          <button class="nnt-opt" data-group="canal" data-val="Ligação (Cold call)" onclick="nntSelectOpt(this)">Ligação (cold call)</button>
+          <button class="nnt-opt nnt-exclusive" data-group="canal" data-val="no-outbound" onclick="nntSelectOpt(this)">Não faço Outbound</button>
+        </div>
+        <div class="nnt-error" id="nnt-e-canal">Selecione ao menos uma opção.</div>
+      </div>
+
+      <!-- Step leads -->
+      <div class="nnt-step" id="nnt-s-leads">
+        <div class="nnt-question" id="nnt-q-leads">Quantos leads você gera por mês?</div>
+        <div class="nnt-options">
+          <button class="nnt-opt" data-group="leads" data-val="lt500" onclick="nntSelectOpt(this)">Menos de 500 por mês</button>
+          <button class="nnt-opt" data-group="leads" data-val="501-1000" onclick="nntSelectOpt(this)">Entre 501 e 1.000 por mês</button>
+          <button class="nnt-opt" data-group="leads" data-val="1001-5000" onclick="nntSelectOpt(this)">Entre 1.001 e 5.000 por mês</button>
+          <button class="nnt-opt" data-group="leads" data-val="5000+" onclick="nntSelectOpt(this)">Mais de 5.000 por mês</button>
+        </div>
+        <div class="nnt-error" id="nnt-e-leads">Selecione o volume de leads.</div>
+      </div>
+
+      <!-- Step time -->
+      <div class="nnt-step" id="nnt-s-team">
+        <div class="nnt-question">Qual é o tamanho do seu time de vendas?</div>
+        <div class="nnt-options">
+          <button class="nnt-opt" data-group="team" data-val="none" onclick="nntSelectOpt(this)">Não tenho pessoas dedicadas</button>
+          <button class="nnt-opt" data-group="team" data-val="1-3" onclick="nntSelectOpt(this)">De 1 a 3 pessoas</button>
+          <button class="nnt-opt" data-group="team" data-val="4-10" onclick="nntSelectOpt(this)">De 4 a 10 pessoas</button>
+          <button class="nnt-opt" data-group="team" data-val="10+" onclick="nntSelectOpt(this)">Mais de 10 pessoas</button>
+        </div>
+        <div class="nnt-error" id="nnt-e-team">Selecione o tamanho do time.</div>
+      </div>
+
+      <!-- Step CRM (inbound) -->
+      <div class="nnt-step" id="nnt-s-crm">
+        <div class="nnt-question">Qual CRM você utiliza atualmente?</div>
+        <select class="nnt-select" id="nnt-crm">
+          <option value="">Selecione uma opção</option>
+          <option>Não uso CRM</option>
+          <option>RD Station</option>
+          <option>Pipedrive</option>
+          <option>Hubspot</option>
+          <option>Salesforce</option>
+          <option>Oracle</option>
+          <option>Zoho CRM</option>
+          <option>Piperun</option>
+          <option>Active Campaign</option>
+          <option>Microsoft Dynamics 365</option>
+          <option>Bitrix24</option>
+          <option>Agendor</option>
+          <option>Moskit</option>
+          <option>Kommo CRM</option>
+          <option>Exact Sales</option>
+          <option>Ramper</option>
+          <option>Outro</option>
+        </select>
+        <div class="nnt-error" id="nnt-e-crm">Selecione o CRM utilizado.</div>
+      </div>
+
+      <!-- Step ferramenta (outbound) -->
+      <div class="nnt-step" id="nnt-s-ferramenta">
+        <div class="nnt-question">Qual ferramenta de prospecção você usa atualmente? <span style="font-size:11px;font-weight:500;opacity:.5;">(opcional)</span></div>
+        <input class="nnt-input" id="nnt-tool" type="text" placeholder="Ex: Apollo, Outreach, Lemlist…" autocomplete="off">
+      </div>
+
+      <!-- Step email -->
+      <div class="nnt-step" id="nnt-s-email">
+        <div class="nnt-question">Qual é o seu email corporativo?</div>
+        <input class="nnt-input" id="nnt-email" type="email" placeholder="voce@suaempresa.com" autocomplete="email">
+        <div class="nnt-error" id="nnt-e-email">Use um email corporativo (não Gmail, Outlook, etc.)</div>
+      </div>
+
+      <!-- Nav -->
+      <div class="nnt-nav" id="nnt-nav">
+        <button class="nnt-btn-back" id="nnt-back" style="display:none" onclick="nntBack()">← Voltar</button>
+        <button class="nnt-btn-next" id="nnt-next" onclick="nntNext()">Continuar →</button>
+      </div>
+
+      <!-- Results -->
+      <div class="nnt-result" id="nnt-ok">
+        <div class="nnt-result-badge ok">Perfil compatível com Nuvia AI</div>
+        <div class="nnt-result-title" id="nnt-ok-title">Ótimo!<br>Conseguimos te ajudar.</div>
+        <div class="nnt-result-body">Agende agora uma sessão de diagnóstico com nosso especialista.</div>
+        <a class="nnt-result-cta" href="https://meetings.hubspot.com/robson-lima/bate-papo-nuvia-ai" target="_blank">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          Agendar sessão
+        </a>
+      </div>
+      <div class="nnt-result" id="nnt-no">
+        <div class="nnt-result-badge wait">Em análise</div>
+        <div class="nnt-result-title">Você está no caminho certo.</div>
+        <div class="nnt-result-body">Em breve um especialista Nuvia entrará em contato. Aguarde!</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Bottom pill -->
+  <div class="nnt-bottom">
+    <input class="nnt-msg-input" id="nnt-msg" type="text" placeholder="Qual é a sua prioridade hoje?" maxlength="300" autocomplete="off">
+    <div class="nnt-actions">
+      <button class="nnt-demo-btn" onclick="nntOpenForm()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        Agendar Demo
+      </button>
+      <div class="nnt-divider"></div>
+      <button class="nnt-wapp-btn" id="nnt-wapp-btn" onclick="nntWapp()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        Fala com especialista
+      </button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  // ── Sequências de steps por modo ──
+  var SEQS={
+    inbound:   ['nnt-s0','nnt-s-leads','nnt-s-team','nnt-s-crm','nnt-s-email'],
+    outbound:  ['nnt-s0','nnt-s-leads','nnt-s-team','nnt-s-ferramenta','nnt-s-email'],
+    e_inbound: ['nnt-s0','nnt-s-canal','nnt-s-leads','nnt-s-team','nnt-s-crm','nnt-s-email'],
+    e_outbound:['nnt-s0','nnt-s-canal','nnt-s-leads','nnt-s-team','nnt-s-ferramenta','nnt-s-email']
+  };
+  var OUTBOUND_PROBS=['ob-linkedin','ob-data','ob-auto'];
+
+  var mode='inbound', steps=SEQS.inbound.slice(), cur=0;
+  var probVal='',leadsVal='',teamVal='',canalVal='';
+  var probLabel='',leadsLabel='',teamLabel='',canalLabel='';
+  var wrap,barEl,navEl,btnNext,btnBack,stepLabelEl;
+
+  // UTM capture
+  var urlParams=(function(){
+    var p={},q=window.location.search.slice(1).split('&');
+    q.forEach(function(pair){var kv=pair.split('=');if(kv[0])p[decodeURIComponent(kv[0])]=decodeURIComponent(kv[1]||'');});
+    return p;
+  })();
+  function utm(k){return urlParams[k]||'';}
+
+  var PERSONAL=["gmail.com","googlemail.com","outlook.com","hotmail.com","hotmail.com.br",
+    "live.com","live.com.br","msn.com","yahoo.com","yahoo.com.br","icloud.com","me.com",
+    "mac.com","protonmail.com","proton.me","aol.com","uol.com.br","bol.com.br",
+    "terra.com.br","ig.com.br","yandex.com","tutanota.com","fastmail.com"];
+  function isPersonal(e){var p=e.split('@');return p.length!==2||PERSONAL.indexOf(p[1].toLowerCase().trim())!==-1;}
+  function deduceName(email){
+    var n=email.split('@')[0].replace(/[._\-+]/g,' ');
+    return n.replace(/\b\w/g,function(c){return c.toUpperCase();}).trim();
+  }
+
+  function init(){
+    wrap        =document.getElementById('nnt-wrap');
+    barEl       =document.getElementById('nnt-bar');
+    navEl       =document.getElementById('nnt-nav');
+    btnNext     =document.getElementById('nnt-next');
+    btnBack     =document.getElementById('nnt-back');
+    stepLabelEl =document.getElementById('nnt-step-label');
+    document.getElementById('nnt-close').addEventListener('click',nntCloseForm);
+    setTimeout(function(){if(wrap)wrap.classList.add('nnt-visible');},1200);
+    var msg=document.getElementById('nnt-msg');
+    if(msg) msg.addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();nntWapp();}});
+  }
+
+  function updateUI(){
+    barEl.style.width=Math.round((cur/(steps.length-1))*100)+'%';
+    btnBack.style.display=cur>0?'block':'none';
+    btnNext.textContent=cur===steps.length-1?'Enviar →':'Continuar →';
+    if(stepLabelEl) stepLabelEl.textContent='Passo '+(cur+1)+' de '+steps.length;
+  }
+
+  function updateLeadsQuestion(){
+    var el=document.getElementById('nnt-q-leads');
+    if(el) el.textContent=mode==='outbound'?'Quantos leads você prospecta por mês?':'Quantos leads você gera por mês?';
+  }
+
+  function goTo(idx){
+    document.getElementById(steps[cur]).classList.remove('nnt-active');
+    cur=idx;
+    document.getElementById(steps[cur]).classList.add('nnt-active');
+    updateUI();
+  }
+
+  function showErr(id,show,fieldId){
+    var el=document.getElementById(id);if(el)el.classList.toggle('nnt-show',show);
+    if(fieldId){var f=document.getElementById(fieldId);if(f)f.classList.toggle('nnt-field-err',show);}
+  }
+
+  function validate(){
+    var s=steps[cur];
+    if(s==='nnt-s0'){var ok=probVal!=='';showErr('nnt-e0',!ok);return ok;}
+    if(s==='nnt-s-canal'){
+      if(canalVal===''){showErr('nnt-e-canal',true);return false;}
+      // Finaliza sequência baseado na escolha
+      if(canalVal==='no-outbound'){
+        mode='inbound'; steps=SEQS.e_inbound.slice();
+      } else {
+        mode='outbound'; steps=SEQS.e_outbound.slice();
+      }
+      updateLeadsQuestion();
+      return true;
+    }
+    if(s==='nnt-s-leads'){showErr('nnt-e-leads',!leadsVal);return!!leadsVal;}
+    if(s==='nnt-s-team'){showErr('nnt-e-team',!teamVal);return!!teamVal;}
+    if(s==='nnt-s-crm'){var v=document.getElementById('nnt-crm').value;showErr('nnt-e-crm',!v,'nnt-crm');return!!v;}
+    if(s==='nnt-s-ferramenta'){return true;} // opcional
+    if(s==='nnt-s-email'){
+      var e=document.getElementById('nnt-email').value.trim();
+      var ok=/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)&&!isPersonal(e);
+      showErr('nnt-e-email',!ok,'nnt-email');return ok;
+    }
+    return true;
+  }
+
+  function isDisqualified(){return leadsVal==='lt500'&&(teamVal==='none'||teamVal==='1-3');}
+
+  function finish(){
+    navEl.style.display='none';
+    steps.forEach(function(id){var s=document.getElementById(id);if(s)s.classList.remove('nnt-active');});
+    barEl.style.width='100%';
+    var email=document.getElementById('nnt-email').value.trim();
+    var nomeCompleto=deduceName(email);
+    var nome=nomeCompleto.split(' ')[0];
+    var qualificado=!isDisqualified();
+
+    var payload={
+      tipo:mode==='outbound'?'Outbound':'Inbound',
+      nome:nomeCompleto,email:email,problema:probLabel,
+      leads:leadsLabel,time:teamLabel,qualificado:qualificado,
+      utm_source:utm('utm_source'),utm_medium:utm('utm_medium'),
+      utm_campaign:utm('utm_campaign'),utm_term:utm('utm_term'),
+      utm_content:utm('utm_content'),fbclid:utm('fbclid'),
+      gclid:utm('gclid'),msclkid:utm('msclkid'),li_fat_id:utm('li_fat_id')
+    };
+    if(mode==='outbound'){
+      payload.canal=canalVal;
+      payload.ferramenta=document.getElementById('nnt-tool').value.trim();
+    } else {
+      var crmEl=document.getElementById('nnt-crm');
+      payload.crm=crmEl.selectedIndex>0?crmEl.options[crmEl.selectedIndex].text:'';
+    }
+
+    var webhook=mode==='outbound'
+      ?'https://nuvia-ai.app.n8n.cloud/webhook/nuvia-sdt-outbound'
+      :'https://nuvia-ai.app.n8n.cloud/webhook/ab6287ac-ffb9-43e4-8028-41248714e6de';
+
+    fetch(webhook,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}).catch(function(){});
+
+    if(qualificado){
+      var t=document.getElementById('nnt-ok-title');
+      if(t) t.innerHTML=mode==='outbound'
+        ?'Ótimo, '+nome+'!<br>Vamos escalar seu outbound.'
+        :'Ótimo, '+nome+'!<br>Conseguimos te ajudar.';
+      document.getElementById('nnt-ok').classList.add('nnt-show');
+    } else {
+      document.getElementById('nnt-no').classList.add('nnt-show');
+    }
+  }
+
+  function reset(){
+    probVal='';leadsVal='';teamVal='';canalVal='';
+    probLabel='';leadsLabel='';teamLabel='';canalLabel='';
+    mode='inbound'; steps=SEQS.inbound.slice(); cur=0;
+    document.querySelectorAll('.nnt-opt').forEach(function(b){b.classList.remove('nnt-sel');});
+    ['nnt-crm','nnt-tool','nnt-email'].forEach(function(id){var el=document.getElementById(id);if(el){el.value='';el.classList.remove('nnt-field-err');}});
+    ['nnt-e0','nnt-e-canal','nnt-e-leads','nnt-e-team','nnt-e-crm','nnt-e-email'].forEach(function(id){var el=document.getElementById(id);if(el)el.classList.remove('nnt-show');});
+    ['nnt-ok','nnt-no'].forEach(function(id){var el=document.getElementById(id);if(el)el.classList.remove('nnt-show');});
+    navEl.style.display='flex';
+    document.querySelectorAll('.nnt-step').forEach(function(s){s.classList.remove('nnt-active');});
+    document.getElementById('nnt-s0').classList.add('nnt-active');
+    updateUI();
+    updateLeadsQuestion();
+  }
+
+  function bindEnter(){
+    ['nnt-tool','nnt-email'].forEach(function(id){
+      var el=document.getElementById(id);if(!el)return;
+      el.addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();nntNext();}});
+    });
+    var crmEl=document.getElementById('nnt-crm');
+    if(crmEl) crmEl.addEventListener('change',function(){if(this.value)setTimeout(function(){nntNext();},260);});
+  }
+
+  // ── Public API ──
+  window.nntSelectOpt=function(btn){
+    var group=btn.getAttribute('data-group')||'prob';
+    var val=btn.getAttribute('data-val');
+    var label=btn.textContent.trim();
+
+    // Prioridade (step 0) — single select, auto-advance
+    if(group==='prob'){
+      document.querySelectorAll('.nnt-opt[data-group="prob"]').forEach(function(b){b.classList.remove('nnt-sel');});
+      btn.classList.add('nnt-sel');
+      probVal=val; probLabel=label;
+      if(OUTBOUND_PROBS.indexOf(val)!==-1){
+        mode='outbound'; steps=SEQS.outbound.slice();
+      } else if(val==='ib-qualify'){
+        mode='inbound'; steps=SEQS.inbound.slice();
+      } else {
+        mode='unknown'; steps=SEQS.e_inbound.slice(); // será atualizado no canal
+      }
+      updateLeadsQuestion();
+      var e=document.getElementById('nnt-e0');if(e)e.classList.remove('nnt-show');
+      setTimeout(function(){nntNext();},260);
+      return;
+    }
+
+    // Canal triage — multi-select com opção exclusiva
+    if(group==='canal'){
+      if(val==='no-outbound'){
+        var wasSelected=btn.classList.contains('nnt-sel');
+        document.querySelectorAll('.nnt-opt[data-group="canal"]').forEach(function(b){b.classList.remove('nnt-sel');});
+        if(!wasSelected){btn.classList.add('nnt-sel');canalVal='no-outbound';canalLabel='';}
+        else{canalVal='';}
+      } else {
+        var noOut=document.querySelector('.nnt-opt[data-val="no-outbound"]');
+        if(noOut) noOut.classList.remove('nnt-sel');
+        btn.classList.toggle('nnt-sel');
+        var sel=[],selLabels=[];
+        document.querySelectorAll('.nnt-opt[data-group="canal"]').forEach(function(b){
+          if(b.classList.contains('nnt-sel')&&b.getAttribute('data-val')!=='no-outbound'){
+            sel.push(b.getAttribute('data-val'));
+            selLabels.push(b.textContent.trim());
+          }
+        });
+        canalVal=sel.join(';'); canalLabel=selLabels.join(', ');
+      }
+      var e=document.getElementById('nnt-e-canal');if(e)e.classList.remove('nnt-show');
+      return; // sem auto-advance
+    }
+
+    // leads / team — single select, auto-advance
+    document.querySelectorAll('.nnt-opt[data-group="'+group+'"]').forEach(function(b){b.classList.remove('nnt-sel');});
+    btn.classList.add('nnt-sel');
+    if(group==='leads'){leadsVal=val;leadsLabel=label;}
+    else if(group==='team'){teamVal=val;teamLabel=label;}
+    var errMap={leads:'nnt-e-leads',team:'nnt-e-team'};
+    var e=document.getElementById(errMap[group]);if(e)e.classList.remove('nnt-show');
+    setTimeout(function(){nntNext();},260);
+  };
+
+  window.nntNext=function(){if(!validate())return;cur<steps.length-1?goTo(cur+1):finish();};
+  window.nntBack=function(){if(cur>0)goTo(cur-1);};
+
+  window.nntOpenForm=function(mode_arg){
+    if(!wrap)init();
+    reset();
+    var backdrop=document.getElementById('nnt-backdrop');
+    if(mode_arg==='modal'){
+      wrap.classList.add('nnt-modal','nnt-visible');
+      if(backdrop)backdrop.classList.add('show');
+    }
+    wrap.classList.add('nnt-open');
+    bindEnter();
+    setTimeout(function(){var s=document.getElementById('nnt-s0');if(s){var o=s.querySelector('.nnt-opt');if(o)o.focus();}},420);
+  };
+
+  window.nntCloseForm=function(){
+    if(!wrap)return;
+    wrap.classList.remove('nnt-open','nnt-modal');
+    var backdrop=document.getElementById('nnt-backdrop');
+    if(backdrop)backdrop.classList.remove('show');
+  };
+
+  window.nntWapp=function(){
+    var msg=document.getElementById('nnt-msg').value.trim();
+    var base='https://wa.me/5511936209022';
+    window.open(msg?base+'?text='+encodeURIComponent(msg):base,'_blank');
+  };
+
+  if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',init);}else{init();}
+})();
+</script>
