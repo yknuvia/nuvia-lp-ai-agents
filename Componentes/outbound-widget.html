@@ -246,7 +246,6 @@
           <button class="nuvia-ob-opt" data-group="canal" data-val="whatsapp" onclick="nuviaObSelectOpt(this)">WhatsApp</button>
           <button class="nuvia-ob-opt" data-group="canal" data-val="linkedin" onclick="nuviaObSelectOpt(this)">LinkedIn</button>
           <button class="nuvia-ob-opt" data-group="canal" data-val="coldcall" onclick="nuviaObSelectOpt(this)">Ligação (cold call)</button>
-          <button class="nuvia-ob-opt" data-group="canal" data-val="combo" onclick="nuviaObSelectOpt(this)">Combinação de canais</button>
         </div>
         <div class="nuvia-ob-error" id="nuvia-ob-e3">Selecione um canal para continuar.</div>
       </div>
@@ -478,17 +477,34 @@
   // Public API
   window.nuviaObSelectOpt=function(btn){
     var group=btn.getAttribute('data-group')||'prob';
+    var val=btn.getAttribute('data-val');
+    var label=btn.textContent.trim();
+
+    if(group==='canal'){
+      // multi-select: toggle
+      btn.classList.toggle('nuvia-ob-sel');
+      var selected=[];var selectedLabels=[];
+      document.querySelectorAll('.nuvia-ob-opt[data-group="canal"]').forEach(function(b){
+        if(b.classList.contains('nuvia-ob-sel')){
+          selected.push(b.getAttribute('data-val'));
+          selectedLabels.push(b.textContent.trim());
+        }
+      });
+      canalVal=selected.join(',');
+      canalLabel=selectedLabels.join(', ');
+      var e=document.getElementById('nuvia-ob-e3');if(e)e.classList.remove('nuvia-ob-show');
+      return; // não avança automaticamente — usuário clica em Próximo
+    }
+
+    // single-select para os demais grupos
     document.querySelectorAll('.nuvia-ob-opt').forEach(function(b){
       if((b.getAttribute('data-group')||'prob')===group) b.classList.remove('nuvia-ob-sel');
     });
     btn.classList.add('nuvia-ob-sel');
-    var val=btn.getAttribute('data-val');
-    var label=btn.textContent.trim();
     if(group==='leads'){leadsVal=val;leadsLabel=label;}
     else if(group==='team'){teamVal=val;teamLabel=label;}
-    else if(group==='canal'){canalVal=val;canalLabel=label;}
     else{probVal=val;probLabel=label;}
-    var stepIdx={prob:0,leads:1,team:2,canal:3}[group];
+    var stepIdx={prob:0,leads:1,team:2}[group];
     var e=document.getElementById('nuvia-ob-e'+stepIdx);if(e)e.classList.remove('nuvia-ob-show');
     setTimeout(function(){nuviaObNext();},260);
   };
