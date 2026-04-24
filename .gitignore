@@ -12,6 +12,8 @@
 !Componentes/sdt2-outbound.html
 !Componentes/sdt2-neutro.html
 !Componentes/sdt2-neutro-modal.html
+!Componentes/sdt2-inbound-modal.html
+!Componentes/sdt2-outbound-modal.html
 !Componentes/outbound-widget.html
 
 # Assets referenciados pelo HTML
