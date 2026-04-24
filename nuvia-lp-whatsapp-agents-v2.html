@@ -1693,6 +1693,7 @@ document.querySelectorAll('.reveal').forEach(function(el){revealObserver.observe
       method:'POST',
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({
+        tipo:'Inbound',
         nome:nomeCompleto,
         email:email,
         problema:probLabel,
