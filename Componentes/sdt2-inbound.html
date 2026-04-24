@@ -160,15 +160,24 @@
 }
 .nuvia-teste-btn:hover{background:#20b858;transform:scale(1.02);}
 .nuvia-teste-btn:active{transform:scale(.98);}
+/* Modal */
+.nuvia-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.52);backdrop-filter:blur(5px);z-index:99998;}
+.nuvia-backdrop.show{display:block;}
+#nuvia-sdt2-wrap.nuvia-modal{top:50%;left:50%;right:auto;bottom:auto;transform:translate(-50%,-50%) !important;width:420px;z-index:99999;}
+#nuvia-sdt2-wrap.nuvia-modal .nuvia-bottom{display:none;}
+#nuvia-sdt2-wrap.nuvia-modal .nuvia-panel{max-height:520px;border-radius:22px;}
+#nuvia-sdt2-wrap.nuvia-modal{border-radius:22px;}
 /* Mobile */
 @media(max-width:900px){
   #nuvia-sdt2-wrap{right:auto;left:50%;transform:translateX(-50%) translateY(120px);width:calc(100% - 32px);max-width:400px;}
   #nuvia-sdt2-wrap.nuvia-visible{transform:translateX(-50%) translateY(0);}
   #nuvia-sdt2-wrap.nuvia-open{transform:translateX(-50%) translateY(0);}
+  #nuvia-sdt2-wrap.nuvia-modal{transform:translate(-50%,-50%) !important;width:calc(100% - 32px);}
 }
 </style>
 
 <!-- NUVIA DT2 :: HTML -->
+<div class="nuvia-backdrop" id="nuvia-backdrop"></div>
 <div id="nuvia-sdt2-wrap">
 
   <div class="nuvia-panel" id="nuvia-panel">
@@ -341,6 +350,11 @@
     // Close button
     var closeBtn=document.getElementById('nuvia-close');
     if(closeBtn) closeBtn.addEventListener('click', nuviaCloseForm);
+    // Fechar backdrop ao clicar fora
+    var backdrop=document.getElementById('nuvia-backdrop');
+    if(backdrop) backdrop.addEventListener('click', nuviaCloseForm);
+    // Fechar com ESC
+    document.addEventListener('keydown',function(e){if(e.key==='Escape')nuviaCloseForm();});
 
     // Show widget after 1.2s (or on scroll if preferred)
     setTimeout(function(){
@@ -481,9 +495,14 @@
   };
   window.nuviaNext=function(){if(!validate())return;cur<TOTAL-1?goTo(cur+1):finish();};
   window.nuviaBack=function(){if(cur>0)goTo(cur-1);};
-  window.nuviaOpenForm=function(){
+  window.nuviaOpenForm=function(mode_arg){
     if(!wrap)init();
     reset();
+    var backdrop=document.getElementById('nuvia-backdrop');
+    if(mode_arg==='modal'){
+      wrap.classList.add('nuvia-modal','nuvia-visible');
+      if(backdrop) backdrop.classList.add('show');
+    }
     wrap.classList.add('nuvia-open');
     bindEnter();
     setTimeout(function(){
@@ -491,7 +510,12 @@
       if(s){var o=s.querySelector('.nuvia-opt');if(o)o.focus();}
     },420);
   };
-  window.nuviaCloseForm=function(){if(wrap)wrap.classList.remove('nuvia-open');};
+  window.nuviaCloseForm=function(){
+    if(!wrap) return;
+    wrap.classList.remove('nuvia-open','nuvia-modal');
+    var backdrop=document.getElementById('nuvia-backdrop');
+    if(backdrop) backdrop.classList.remove('show');
+  };
   window.nuviaWapp=function(){
     var msg=document.getElementById('nuvia-msg').value.trim();
     var base='https://wa.me/5511936209022';
