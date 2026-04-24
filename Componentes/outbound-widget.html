@@ -418,7 +418,7 @@
     var tool=document.getElementById('nuvia-ob-tool').value.trim();
     var qualificado=!isDisqualified();
 
-    fetch('https://nuvia-ai.app.n8n.cloud/webhook/23dd7d5d-6872-43bf-9533-f93df45c1a27',{
+    fetch('https://nuvia-ai.app.n8n.cloud/webhook/nuvia-sdt-outbound',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({
