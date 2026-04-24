@@ -164,16 +164,16 @@
         <div class="nnt-error" id="nnt-e0">Selecione uma opção para continuar.</div>
       </div>
 
-      <!-- Step canal — apenas para "Não sei ao certo" -->
+      <!-- Step canal — todos os outbound + triage para "Não sei ao certo" -->
       <div class="nnt-step" id="nnt-s-canal">
-        <div class="nnt-question">Você já usa algum canal para prospecção Outbound?</div>
+        <div class="nnt-question" id="nnt-q-canal">Quais canais você usa no outbound?</div>
         <div class="nnt-step-hint">Marque todos os correspondentes e clique em continuar</div>
         <div class="nnt-options">
           <button class="nnt-opt" data-group="canal" data-val="Email" onclick="nntSelectOpt(this)">Email</button>
           <button class="nnt-opt" data-group="canal" data-val="Whatsapp" onclick="nntSelectOpt(this)">WhatsApp</button>
           <button class="nnt-opt" data-group="canal" data-val="Linkedin" onclick="nntSelectOpt(this)">LinkedIn</button>
           <button class="nnt-opt" data-group="canal" data-val="Ligação (Cold call)" onclick="nntSelectOpt(this)">Ligação (cold call)</button>
-          <button class="nnt-opt nnt-exclusive" data-group="canal" data-val="no-outbound" onclick="nntSelectOpt(this)">Não faço Outbound</button>
+          <button class="nnt-opt nnt-exclusive" id="nnt-no-outbound-btn" data-group="canal" data-val="no-outbound" onclick="nntSelectOpt(this)" style="display:none">Não faço Outbound ainda</button>
         </div>
         <div class="nnt-error" id="nnt-e-canal">Selecione ao menos uma opção.</div>
       </div>
@@ -289,7 +289,7 @@
   // ── Sequências de steps por modo ──
   var SEQS={
     inbound:   ['nnt-s0','nnt-s-leads','nnt-s-team','nnt-s-crm','nnt-s-email'],
-    outbound:  ['nnt-s0','nnt-s-leads','nnt-s-team','nnt-s-ferramenta','nnt-s-email'],
+    outbound:  ['nnt-s0','nnt-s-leads','nnt-s-team','nnt-s-canal','nnt-s-ferramenta','nnt-s-email'],
     e_inbound: ['nnt-s0','nnt-s-canal','nnt-s-leads','nnt-s-team','nnt-s-crm','nnt-s-email'],
     e_outbound:['nnt-s0','nnt-s-canal','nnt-s-leads','nnt-s-team','nnt-s-ferramenta','nnt-s-email']
   };
@@ -343,10 +343,23 @@
     if(el) el.textContent=mode==='outbound'?'Quantos leads você prospecta por mês?':'Quantos leads você gera por mês?';
   }
 
+  function updateCanalStep(){
+    var q=document.getElementById('nnt-q-canal');
+    var noOutBtn=document.getElementById('nnt-no-outbound-btn');
+    if(mode==='unknown'){
+      if(q) q.textContent='Você já usa algum canal para prospecção Outbound?';
+      if(noOutBtn) noOutBtn.style.display='';
+    } else {
+      if(q) q.textContent='Quais canais você usa no outbound?';
+      if(noOutBtn) noOutBtn.style.display='none';
+    }
+  }
+
   function goTo(idx){
     document.getElementById(steps[cur]).classList.remove('nnt-active');
     cur=idx;
     document.getElementById(steps[cur]).classList.add('nnt-active');
+    if(steps[cur]==='nnt-s-canal') updateCanalStep();
     updateUI();
   }
 
@@ -360,13 +373,15 @@
     if(s==='nnt-s0'){var ok=probVal!=='';showErr('nnt-e0',!ok);return ok;}
     if(s==='nnt-s-canal'){
       if(canalVal===''){showErr('nnt-e-canal',true);return false;}
-      // Finaliza sequência baseado na escolha
-      if(canalVal==='no-outbound'){
-        mode='inbound'; steps=SEQS.e_inbound.slice();
-      } else {
-        mode='outbound'; steps=SEQS.e_outbound.slice();
+      // Só redireciona a sequência se ainda não soubermos o modo (path "E")
+      if(mode==='unknown'){
+        if(canalVal==='Nenhum'){
+          mode='inbound'; steps=SEQS.e_inbound.slice();
+        } else {
+          mode='outbound'; steps=SEQS.e_outbound.slice();
+        }
+        updateLeadsQuestion();
       }
-      updateLeadsQuestion();
       return true;
     }
     if(s==='nnt-s-leads'){showErr('nnt-e-leads',!leadsVal);return!!leadsVal;}
@@ -401,8 +416,8 @@
       utm_content:utm('utm_content'),fbclid:utm('fbclid'),
       gclid:utm('gclid'),msclkid:utm('msclkid'),li_fat_id:utm('li_fat_id')
     };
+    if(canalVal) payload.canal=canalVal;
     if(mode==='outbound'){
-      payload.canal=canalVal;
       payload.ferramenta=document.getElementById('nnt-tool').value.trim();
     } else {
       var crmEl=document.getElementById('nnt-crm');
@@ -479,7 +494,7 @@
       if(val==='no-outbound'){
         var wasSelected=btn.classList.contains('nnt-sel');
         document.querySelectorAll('.nnt-opt[data-group="canal"]').forEach(function(b){b.classList.remove('nnt-sel');});
-        if(!wasSelected){btn.classList.add('nnt-sel');canalVal='no-outbound';canalLabel='';}
+        if(!wasSelected){btn.classList.add('nnt-sel');canalVal='Nenhum';canalLabel='';}
         else{canalVal='';}
       } else {
         var noOut=document.querySelector('.nnt-opt[data-val="no-outbound"]');
