@@ -242,10 +242,10 @@
         <div class="nuvia-ob-step-label">Passo 4 de 6</div>
         <div class="nuvia-ob-question">Quais canais você usa no outbound?</div>
         <div class="nuvia-ob-options">
-          <button class="nuvia-ob-opt" data-group="canal" data-val="email" onclick="nuviaObSelectOpt(this)">Email</button>
-          <button class="nuvia-ob-opt" data-group="canal" data-val="whatsapp" onclick="nuviaObSelectOpt(this)">WhatsApp</button>
-          <button class="nuvia-ob-opt" data-group="canal" data-val="linkedin" onclick="nuviaObSelectOpt(this)">LinkedIn</button>
-          <button class="nuvia-ob-opt" data-group="canal" data-val="coldcall" onclick="nuviaObSelectOpt(this)">Ligação (cold call)</button>
+          <button class="nuvia-ob-opt" data-group="canal" data-val="Email" onclick="nuviaObSelectOpt(this)">Email</button>
+          <button class="nuvia-ob-opt" data-group="canal" data-val="Whatsapp" onclick="nuviaObSelectOpt(this)">WhatsApp</button>
+          <button class="nuvia-ob-opt" data-group="canal" data-val="Linkedin" onclick="nuviaObSelectOpt(this)">LinkedIn</button>
+          <button class="nuvia-ob-opt" data-group="canal" data-val="Ligação (Cold call)" onclick="nuviaObSelectOpt(this)">Ligação (cold call)</button>
         </div>
         <div class="nuvia-ob-error" id="nuvia-ob-e3">Selecione um canal para continuar.</div>
       </div>
@@ -427,7 +427,7 @@
         problema:probLabel,
         leads:leadsLabel,
         time:teamLabel,
-        canal:canalLabel,
+        canal:canalVal,
         ferramenta:tool,
         qualificado:qualificado,
         utm_source:utm('utm_source'),
@@ -490,7 +490,7 @@
           selectedLabels.push(b.textContent.trim());
         }
       });
-      canalVal=selected.join(',');
+      canalVal=selected.join(';');
       canalLabel=selectedLabels.join(', ');
       var e=document.getElementById('nuvia-ob-e3');if(e)e.classList.remove('nuvia-ob-show');
       return; // não avança automaticamente — usuário clica em Próximo

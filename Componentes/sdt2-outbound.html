@@ -236,10 +236,10 @@
         <div class="nuvia-ob2-step-label">Passo 4 de 6</div>
         <div class="nuvia-ob2-question">Quais canais você usa no outbound? <span style="font-weight:500;opacity:.5;font-size:11px;">(pode marcar mais de um)</span></div>
         <div class="nuvia-ob2-options">
-          <button class="nuvia-ob2-opt" data-group="canal" data-val="email" onclick="nuviaOb2SelectOpt(this)">Email</button>
-          <button class="nuvia-ob2-opt" data-group="canal" data-val="whatsapp" onclick="nuviaOb2SelectOpt(this)">WhatsApp</button>
-          <button class="nuvia-ob2-opt" data-group="canal" data-val="linkedin" onclick="nuviaOb2SelectOpt(this)">LinkedIn</button>
-          <button class="nuvia-ob2-opt" data-group="canal" data-val="coldcall" onclick="nuviaOb2SelectOpt(this)">Ligação (cold call)</button>
+          <button class="nuvia-ob2-opt" data-group="canal" data-val="Email" onclick="nuviaOb2SelectOpt(this)">Email</button>
+          <button class="nuvia-ob2-opt" data-group="canal" data-val="Whatsapp" onclick="nuviaOb2SelectOpt(this)">WhatsApp</button>
+          <button class="nuvia-ob2-opt" data-group="canal" data-val="Linkedin" onclick="nuviaOb2SelectOpt(this)">LinkedIn</button>
+          <button class="nuvia-ob2-opt" data-group="canal" data-val="Ligação (Cold call)" onclick="nuviaOb2SelectOpt(this)">Ligação (cold call)</button>
         </div>
         <div class="nuvia-ob2-error" id="nuvia-ob2-e3">Selecione ao menos um canal.</div>
       </div>
@@ -416,7 +416,7 @@
         problema:probLabel,
         leads:leadsLabel,
         time:teamLabel,
-        canal:canalLabel,
+        canal:canalVal,
         ferramenta:tool,
         qualificado:qualificado,
         utm_source:utm('utm_source'),
@@ -479,7 +479,7 @@
           selectedLabels.push(b.textContent.trim());
         }
       });
-      canalVal=selected.join(',');
+      canalVal=selected.join(';');
       canalLabel=selectedLabels.join(', ');
       var e=document.getElementById('nuvia-ob2-e3');if(e)e.classList.remove('nuvia-ob2-show');
       return; // não avança — usuário clica em Continuar
