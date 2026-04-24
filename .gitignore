@@ -4,6 +4,7 @@
 # Incluir apenas o necessário para a landing page
 !nuvia-lp-whatsapp-agents-v2.html
 !.gitignore
+!vercel.json
 
 # Pasta de componentes
 !Componentes/

@@ -1,0 +1,5 @@
+{
+  "rewrites": [
+    { "source": "/", "destination": "/nuvia-lp-whatsapp-agents-v2.html" }
+  ]
+}
