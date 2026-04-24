@@ -494,7 +494,7 @@
       if(val==='no-outbound'){
         var wasSelected=btn.classList.contains('nnt-sel');
         document.querySelectorAll('.nnt-opt[data-group="canal"]').forEach(function(b){b.classList.remove('nnt-sel');});
-        if(!wasSelected){btn.classList.add('nnt-sel');canalVal='Nenhum';canalLabel='';}
+        if(!wasSelected){btn.classList.add('nnt-sel');canalVal='Nenhum';canalLabel='';setTimeout(function(){nntNext();},260);}
         else{canalVal='';}
       } else {
         var noOut=document.querySelector('.nnt-opt[data-val="no-outbound"]');
