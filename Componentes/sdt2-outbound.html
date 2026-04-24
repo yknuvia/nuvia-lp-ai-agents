@@ -479,7 +479,7 @@
           selectedLabels.push(b.textContent.trim());
         }
       });
-      canalVal=selected.map(function(v){return '"'+v+'"';}).join(';');
+      canalVal=selected.join(';');
       canalLabel=selectedLabels.join(', ');
       var e=document.getElementById('nuvia-ob2-e3');if(e)e.classList.remove('nuvia-ob2-show');
       return; // não avança — usuário clica em Continuar
