@@ -3,6 +3,7 @@
 
 # Incluir apenas o necessário para a landing page
 !nuvia-lp-whatsapp-agents-v2.html
+!nuvia-lp-crm-ai.html
 !.gitignore
 !vercel.json
 
